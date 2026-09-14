@@ -40,4 +40,41 @@
         </tbody>
     </table>
 </div>
+
+<div class="bg-white rounded shadow p-4 mt-6 max-w-xl">
+    <h2 class="font-semibold mb-3">Payments</h2>
+    <table class="w-full text-sm mb-4">
+        <thead class="text-left text-gray-500">
+            <tr><th class="py-1">Date</th><th class="py-1">Method</th><th class="py-1">Amount</th></tr>
+        </thead>
+        <tbody>
+            @forelse ($payments as $payment)
+                <tr class="border-t">
+                    <td class="py-1.5">{{ $payment->payment_date->format('Y-m-d') }}</td>
+                    <td class="py-1.5">{{ $payment->method }}</td>
+                    <td class="py-1.5">{{ number_format($payment->amount, 2) }}</td>
+                </tr>
+            @empty
+                <tr><td colspan="3" class="py-4 text-center text-gray-500">No payments recorded yet.</td></tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    @if ($balanceDue > 0)
+        <form method="POST" action="{{ route('payments.store', $order) }}" class="border-t pt-4 grid grid-cols-2 gap-2">
+            @csrf
+            <input type="date" name="payment_date" value="{{ now()->format('Y-m-d') }}" required class="border rounded px-2 py-1.5 text-sm">
+            <input type="number" step="0.01" name="amount" placeholder="Amount (max {{ number_format($balanceDue, 2) }})" max="{{ $balanceDue }}" required class="border rounded px-2 py-1.5 text-sm">
+            <select name="method" required class="border rounded px-2 py-1.5 text-sm col-span-2">
+                <option value="cash">Cash</option>
+                <option value="bank_transfer">Bank Transfer</option>
+                <option value="mobile_money">Mobile Money</option>
+                <option value="cheque">Cheque</option>
+            </select>
+            <button type="submit" class="col-span-2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded hover:bg-gray-700">Record Payment</button>
+        </form>
+    @else
+        <p class="text-sm text-green-600 border-t pt-4">Paid in full.</p>
+    @endif
+</div>
 @endsection

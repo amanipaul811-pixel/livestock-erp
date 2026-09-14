@@ -102,4 +102,40 @@
         @endif
     </div>
 </div>
+
+<div class="bg-white rounded shadow p-4 mt-6 max-w-xl">
+    <h2 class="font-semibold mb-3">Other Expenses (overhead)</h2>
+    <table class="w-full text-sm mb-4">
+        <thead class="text-left text-gray-500">
+            <tr><th class="py-1">Date</th><th class="py-1">Category</th><th class="py-1">Amount</th><th class="py-1">Description</th></tr>
+        </thead>
+        <tbody>
+            @forelse ($batch->expenses as $expense)
+                <tr class="border-t">
+                    <td class="py-1.5">{{ $expense->expense_date->format('Y-m-d') }}</td>
+                    <td class="py-1.5">{{ $expense->category }}</td>
+                    <td class="py-1.5">{{ number_format($expense->amount, 2) }}</td>
+                    <td class="py-1.5">{{ $expense->description ?? '—' }}</td>
+                </tr>
+            @empty
+                <tr><td colspan="4" class="py-4 text-center text-gray-500">No expenses logged yet.</td></tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    <form method="POST" action="{{ route('expenses.store', $batch) }}" class="border-t pt-4 grid grid-cols-2 gap-2">
+        @csrf
+        <select name="category" required class="border rounded px-2 py-1.5 text-sm">
+            <option value="labor">Labor</option>
+            <option value="utilities">Utilities</option>
+            <option value="transport">Transport</option>
+            <option value="rent">Rent</option>
+            <option value="other">Other</option>
+        </select>
+        <input type="date" name="expense_date" value="{{ now()->format('Y-m-d') }}" required class="border rounded px-2 py-1.5 text-sm">
+        <input type="number" step="0.01" name="amount" placeholder="Amount" required class="border rounded px-2 py-1.5 text-sm">
+        <input type="text" name="description" placeholder="Description" class="border rounded px-2 py-1.5 text-sm">
+        <button type="submit" class="col-span-2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded hover:bg-gray-700">Add Expense</button>
+    </form>
+</div>
 @endsection

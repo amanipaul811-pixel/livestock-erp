@@ -4,8 +4,10 @@ use App\Http\Controllers\Api\AnimalController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BatchController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\ExpenseController;
 use App\Http\Controllers\Api\FeedLogController;
 use App\Http\Controllers\Api\HealthRecordController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\SalesOrderController;
 use App\Http\Controllers\Api\WeighInController;
 use Illuminate\Support\Facades\Route;
@@ -49,7 +51,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/animals/{animal}/health-records', [HealthRecordController::class, 'index']);
     Route::post('/animals/{animal}/health-records', [HealthRecordController::class, 'store']);
 
+    // --- Expenses (batch overhead) ---
+    Route::get('/batches/{batch}/expenses', [ExpenseController::class, 'index']);
+    Route::post('/batches/{batch}/expenses', [ExpenseController::class, 'store']);
+
     // --- Sales & settlement ---
     Route::post('/sales-orders', [SalesOrderController::class, 'store']);
     Route::get('/sales-orders/{salesOrder}', [SalesOrderController::class, 'show']);
+
+    // --- Payments (against a sales order) ---
+    Route::get('/sales-orders/{salesOrder}/payments', [PaymentController::class, 'index']);
+    Route::post('/sales-orders/{salesOrder}/payments', [PaymentController::class, 'store']);
 });

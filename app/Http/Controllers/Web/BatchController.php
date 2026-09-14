@@ -47,7 +47,7 @@ class BatchController extends Controller
 
     public function show(Batch $batch)
     {
-        $batch->load(['species', 'pen', 'animals.species', 'feedLogs.feedItem']);
+        $batch->load(['species', 'pen', 'animals.species', 'feedLogs.feedItem', 'expenses']);
 
         return view('batches.show', [
             'batch' => $batch,

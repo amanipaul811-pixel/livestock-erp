@@ -87,6 +87,7 @@ class SalesOrderController extends Controller
 
         return view('sales-orders.show', [
             'order' => $salesOrder,
+            'payments' => $salesOrder->payments()->orderBy('payment_date')->get(),
             'amountPaid' => $salesOrder->amountPaid(),
             'balanceDue' => $salesOrder->balanceDue(),
         ]);

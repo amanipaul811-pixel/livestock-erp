@@ -5,9 +5,11 @@ use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\BatchController;
 use App\Http\Controllers\Web\CustomerController;
 use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\ExpenseController;
 use App\Http\Controllers\Web\FeedItemController;
 use App\Http\Controllers\Web\FeedLogController;
 use App\Http\Controllers\Web\HealthRecordController;
+use App\Http\Controllers\Web\PaymentController;
 use App\Http\Controllers\Web\SalesOrderController;
 use App\Http\Controllers\Web\WeighInController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/animals/{animal}/weigh-ins', [WeighInController::class, 'store'])->name('weigh-ins.store');
     Route::post('/animals/{animal}/health-records', [HealthRecordController::class, 'store'])->name('health-records.store');
     Route::post('/batches/{batch}/feed-logs', [FeedLogController::class, 'store'])->name('feed-logs.store');
+    Route::post('/batches/{batch}/expenses', [ExpenseController::class, 'store'])->name('expenses.store');
 
     Route::get('/feed-items', [FeedItemController::class, 'index'])->name('feed-items.index');
     Route::post('/feed-items', [FeedItemController::class, 'store'])->name('feed-items.store');
@@ -43,4 +46,5 @@ Route::middleware('auth')->group(function () {
     Route::get('/sales-orders/create', [SalesOrderController::class, 'create'])->name('sales-orders.create');
     Route::post('/sales-orders', [SalesOrderController::class, 'store'])->name('sales-orders.store');
     Route::get('/sales-orders/{salesOrder}', [SalesOrderController::class, 'show'])->name('sales-orders.show');
+    Route::post('/sales-orders/{salesOrder}/payments', [PaymentController::class, 'store'])->name('payments.store');
 });
