@@ -20,4 +20,14 @@ class PurchaseOrder extends Model
         return $this->hasMany(Payment::class, 'reference_id')
             ->where('reference_type', 'purchase_order');
     }
+
+    public function amountPaid(): float
+    {
+        return (float) $this->payments()->sum('amount');
+    }
+
+    public function balanceDue(): float
+    {
+        return (float) $this->total_amount - $this->amountPaid();
+    }
 }

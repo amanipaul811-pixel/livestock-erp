@@ -10,6 +10,7 @@ use App\Http\Controllers\Web\FeedItemController;
 use App\Http\Controllers\Web\FeedLogController;
 use App\Http\Controllers\Web\HealthRecordController;
 use App\Http\Controllers\Web\PaymentController;
+use App\Http\Controllers\Web\PurchaseOrderController;
 use App\Http\Controllers\Web\SalesOrderController;
 use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\WarehouseController;
@@ -55,4 +56,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/sales-orders', [SalesOrderController::class, 'store'])->name('sales-orders.store');
     Route::get('/sales-orders/{salesOrder}', [SalesOrderController::class, 'show'])->name('sales-orders.show');
     Route::post('/sales-orders/{salesOrder}/payments', [PaymentController::class, 'store'])->name('payments.store');
+
+    Route::get('/purchase-orders', [PurchaseOrderController::class, 'index'])->name('purchase-orders.index');
+    Route::get('/purchase-orders/create', [PurchaseOrderController::class, 'create'])->name('purchase-orders.create');
+    Route::post('/purchase-orders', [PurchaseOrderController::class, 'store'])->name('purchase-orders.store');
+    Route::get('/purchase-orders/{purchaseOrder}', [PurchaseOrderController::class, 'show'])->name('purchase-orders.show');
+    Route::patch('/purchase-orders/{purchaseOrder}/status', [PurchaseOrderController::class, 'updateStatus'])->name('purchase-orders.update-status');
+    Route::post('/purchase-orders/{purchaseOrder}/payments', [PaymentController::class, 'storeForPurchaseOrder'])->name('purchase-order-payments.store');
 });

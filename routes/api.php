@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ExpenseController;
 use App\Http\Controllers\Api\FeedLogController;
 use App\Http\Controllers\Api\HealthRecordController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\PurchaseOrderController;
 use App\Http\Controllers\Api\SalesOrderController;
 use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\WarehouseController;
@@ -70,4 +71,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/suppliers', [SupplierController::class, 'store']);
     Route::get('/warehouses', [WarehouseController::class, 'index']);
     Route::post('/warehouses', [WarehouseController::class, 'store']);
+
+    // --- Purchase orders ---
+    Route::get('/purchase-orders', [PurchaseOrderController::class, 'index']);
+    Route::post('/purchase-orders', [PurchaseOrderController::class, 'store']);
+    Route::get('/purchase-orders/{purchaseOrder}', [PurchaseOrderController::class, 'show']);
+    Route::patch('/purchase-orders/{purchaseOrder}', [PurchaseOrderController::class, 'update']);
+
+    // --- Payments (against a purchase order) ---
+    Route::get('/purchase-orders/{purchaseOrder}/payments', [PaymentController::class, 'indexForPurchaseOrder']);
+    Route::post('/purchase-orders/{purchaseOrder}/payments', [PaymentController::class, 'storeForPurchaseOrder']);
 });

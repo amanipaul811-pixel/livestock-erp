@@ -15,6 +15,7 @@
             <div class="flex flex-wrap items-center gap-x-5 gap-y-1">
                 <a href="{{ route('dashboard') }}" class="font-semibold">Livestock ERP</a>
                 <a href="{{ route('batches.index') }}" class="text-sm text-gray-300 hover:text-white">Batches</a>
+                <a href="{{ route('purchase-orders.index') }}" class="text-sm text-gray-300 hover:text-white">Purchase Orders</a>
                 <a href="{{ route('sales-orders.create') }}" class="text-sm text-gray-300 hover:text-white">Sell</a>
                 <div x-data="{ open: false }" @click.outside="open = false" class="relative">
                     <button @click="open = !open" class="text-sm text-gray-300 hover:text-white flex items-center gap-1">
