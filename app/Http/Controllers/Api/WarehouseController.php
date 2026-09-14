@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\StoreWarehouseRequest;
 use App\Models\Warehouse;
-use Illuminate\Http\Request;
 
 class WarehouseController extends Controller
 {
@@ -15,15 +15,9 @@ class WarehouseController extends Controller
     }
 
     // POST /api/warehouses
-    public function store(Request $request)
+    public function store(StoreWarehouseRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:100',
-            'location' => 'nullable|string|max:150',
-            'type' => 'required|in:feed,medicine,equipment,general',
-        ]);
-
-        $warehouse = Warehouse::create($validated);
+        $warehouse = Warehouse::create($request->validated());
 
         return response()->json($warehouse, 201);
     }

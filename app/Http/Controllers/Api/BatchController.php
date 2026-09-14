@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\StoreBatchRequest;
+use App\Http\Requests\Api\UpdateBatchRequest;
 use App\Models\Batch;
 use Illuminate\Http\Request;
 
@@ -28,17 +30,9 @@ class BatchController extends Controller
     }
 
     // POST /api/batches
-    public function store(Request $request)
+    public function store(StoreBatchRequest $request)
     {
-        $validated = $request->validate([
-            'batch_code' => 'required|string|unique:batches,batch_code',
-            'species_id' => 'required|exists:species,id',
-            'pen_id' => 'nullable|exists:pens,id',
-            'start_date' => 'required|date',
-            'expected_end_date' => 'nullable|date|after:start_date',
-            'notes' => 'nullable|string',
-        ]);
-
+        $validated = $request->validated();
         $validated['created_by'] = $request->user()->id ?? null;
         $validated['status'] = 'active';
 
@@ -48,17 +42,9 @@ class BatchController extends Controller
     }
 
     // PATCH /api/batches/{batch}
-    public function update(Request $request, Batch $batch)
+    public function update(UpdateBatchRequest $request, Batch $batch)
     {
-        $validated = $request->validate([
-            'pen_id' => 'nullable|exists:pens,id',
-            'expected_end_date' => 'nullable|date',
-            'actual_end_date' => 'nullable|date',
-            'status' => 'nullable|in:active,partially_sold,closed',
-            'notes' => 'nullable|string',
-        ]);
-
-        $batch->update($validated);
+        $batch->update($request->validated());
 
         return response()->json($batch);
     }

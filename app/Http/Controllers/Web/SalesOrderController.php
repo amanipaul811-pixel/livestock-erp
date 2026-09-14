@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Web\StoreSalesOrderRequest;
 use App\Models\Animal;
 use App\Models\Batch;
 use App\Models\Customer;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderItem;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class SalesOrderController extends Controller
@@ -23,16 +23,9 @@ class SalesOrderController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreSalesOrderRequest $request)
     {
-        $validated = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'sale_date' => 'required|date',
-            'items' => 'required|array|min:1',
-            'items.*.animal_id' => 'required|exists:animals,id',
-            'items.*.sale_weight_kg' => 'required|numeric|min:0',
-            'items.*.price_per_kg' => 'required|numeric|min:0',
-        ]);
+        $validated = $request->validated();
 
         $order = DB::transaction(function () use ($validated) {
             $total = collect($validated['items'])->sum(fn ($i) => $i['sale_weight_kg'] * $i['price_per_kg']);

@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\StorePurchaseOrderPaymentRequest;
+use App\Http\Requests\Api\StoreSalesOrderPaymentRequest;
 use App\Models\Payment;
 use App\Models\PurchaseOrder;
 use App\Models\SalesOrder;
-use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
@@ -22,15 +23,9 @@ class PaymentController extends Controller
     }
 
     // POST /api/sales-orders/{salesOrder}/payments
-    public function store(Request $request, SalesOrder $salesOrder)
+    public function store(StoreSalesOrderPaymentRequest $request, SalesOrder $salesOrder)
     {
-        $validated = $request->validate([
-            'payment_date' => 'required|date',
-            'amount' => 'required|numeric|min:0.01|max:'.$salesOrder->balanceDue(),
-            'method' => 'required|in:cash,bank_transfer,mobile_money,cheque',
-            'notes' => 'nullable|string',
-        ]);
-
+        $validated = $request->validated();
         $validated['reference_type'] = 'sales_order';
         $validated['reference_id'] = $salesOrder->id;
 
@@ -51,15 +46,9 @@ class PaymentController extends Controller
     }
 
     // POST /api/purchase-orders/{purchaseOrder}/payments
-    public function storeForPurchaseOrder(Request $request, PurchaseOrder $purchaseOrder)
+    public function storeForPurchaseOrder(StorePurchaseOrderPaymentRequest $request, PurchaseOrder $purchaseOrder)
     {
-        $validated = $request->validate([
-            'payment_date' => 'required|date',
-            'amount' => 'required|numeric|min:0.01|max:'.$purchaseOrder->balanceDue(),
-            'method' => 'required|in:cash,bank_transfer,mobile_money,cheque',
-            'notes' => 'nullable|string',
-        ]);
-
+        $validated = $request->validated();
         $validated['reference_type'] = 'purchase_order';
         $validated['reference_id'] = $purchaseOrder->id;
 

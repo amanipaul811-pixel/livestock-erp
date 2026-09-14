@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Web\StoreAnimalRequest;
 use App\Models\Animal;
 use App\Models\Batch;
 use App\Models\Pen;
 use App\Models\Supplier;
-use Illuminate\Http\Request;
 
 class AnimalController extends Controller
 {
@@ -20,20 +20,9 @@ class AnimalController extends Controller
         ]);
     }
 
-    public function store(Request $request, Batch $batch)
+    public function store(StoreAnimalRequest $request, Batch $batch)
     {
-        $validated = $request->validate([
-            'tag_id' => 'required|string|unique:animals,tag_id',
-            'breed' => 'nullable|string',
-            'sex' => 'required|in:male,female',
-            'estimated_age_months' => 'nullable|integer',
-            'entry_date' => 'required|date',
-            'entry_weight_kg' => 'required|numeric|min:0',
-            'purchase_price' => 'required|numeric|min:0',
-            'supplier_id' => 'nullable|exists:suppliers,id',
-            'current_pen_id' => 'nullable|exists:pens,id',
-        ]);
-
+        $validated = $request->validated();
         $validated['batch_id'] = $batch->id;
         $validated['species_id'] = $batch->species_id;
         $validated['status'] = 'on_feed';

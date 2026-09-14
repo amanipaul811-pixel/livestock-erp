@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Web\StorePurchaseOrderRequest;
+use App\Http\Requests\Web\UpdatePurchaseOrderStatusRequest;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
-use Illuminate\Http\Request;
 
 class PurchaseOrderController extends Controller
 {
@@ -23,15 +24,9 @@ class PurchaseOrderController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StorePurchaseOrderRequest $request)
     {
-        $validated = $request->validate([
-            'supplier_id' => 'required|exists:suppliers,id',
-            'order_type' => 'required|in:animal,feed,medicine,other',
-            'order_date' => 'required|date',
-            'total_amount' => 'required|numeric|min:0',
-        ]);
-
+        $validated = $request->validated();
         $validated['po_number'] = 'PO-'.now()->format('Ymd').'-'.strtoupper(uniqid());
         $validated['status'] = 'pending';
 
@@ -52,13 +47,9 @@ class PurchaseOrderController extends Controller
         ]);
     }
 
-    public function updateStatus(Request $request, PurchaseOrder $purchaseOrder)
+    public function updateStatus(UpdatePurchaseOrderStatusRequest $request, PurchaseOrder $purchaseOrder)
     {
-        $validated = $request->validate([
-            'status' => 'required|in:pending,received,cancelled',
-        ]);
-
-        $purchaseOrder->update($validated);
+        $purchaseOrder->update($request->validated());
 
         return redirect()->route('purchase-orders.show', $purchaseOrder)->with('status', 'Status updated.');
     }

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Web\StoreRationFormulaRequest;
 use App\Models\FeedItem;
 use App\Models\RationFormula;
 use App\Models\RationFormulaItem;
 use App\Models\Species;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class RationFormulaController extends Controller
@@ -27,16 +27,9 @@ class RationFormulaController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreRationFormulaRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:100',
-            'species_id' => 'required|exists:species,id',
-            'stage' => 'required|in:starter,growing,finishing',
-            'items' => 'required|array|min:1',
-            'items.*.feed_item_id' => 'required|exists:feed_items,id',
-            'items.*.quantity_kg_per_head' => 'required|numeric|min:0.01',
-        ]);
+        $validated = $request->validated();
 
         $formula = DB::transaction(function () use ($validated) {
             $formula = RationFormula::create([

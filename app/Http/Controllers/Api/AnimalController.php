@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\StoreAnimalRequest;
 use App\Models\Animal;
 use App\Models\Batch;
-use Illuminate\Http\Request;
 
 class AnimalController extends Controller
 {
@@ -22,22 +22,9 @@ class AnimalController extends Controller
     }
 
     // POST /api/animals — register a new animal into a batch (intake)
-    public function store(Request $request)
+    public function store(StoreAnimalRequest $request)
     {
-        $validated = $request->validate([
-            'tag_id' => 'required|string|unique:animals,tag_id',
-            'batch_id' => 'required|exists:batches,id',
-            'species_id' => 'required|exists:species,id',
-            'breed' => 'nullable|string',
-            'sex' => 'required|in:male,female',
-            'estimated_age_months' => 'nullable|integer',
-            'entry_date' => 'required|date',
-            'entry_weight_kg' => 'required|numeric|min:0',
-            'purchase_price' => 'required|numeric|min:0',
-            'supplier_id' => 'nullable|exists:suppliers,id',
-            'current_pen_id' => 'nullable|exists:pens,id',
-        ]);
-
+        $validated = $request->validated();
         $validated['status'] = 'on_feed';
 
         $animal = Animal::create($validated);

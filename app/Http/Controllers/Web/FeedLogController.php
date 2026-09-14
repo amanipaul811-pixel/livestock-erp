@@ -3,21 +3,16 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Web\StoreFeedLogRequest;
 use App\Models\Batch;
 use App\Models\FeedItem;
 use App\Models\FeedLog;
-use Illuminate\Http\Request;
 
 class FeedLogController extends Controller
 {
-    public function store(Request $request, Batch $batch)
+    public function store(StoreFeedLogRequest $request, Batch $batch)
     {
-        $validated = $request->validate([
-            'feed_item_id' => 'required|exists:feed_items,id',
-            'feed_date' => 'required|date',
-            'quantity_kg' => 'required|numeric|min:0',
-        ]);
-
+        $validated = $request->validated();
         $feedItem = FeedItem::findOrFail($validated['feed_item_id']);
 
         $validated['batch_id'] = $batch->id;

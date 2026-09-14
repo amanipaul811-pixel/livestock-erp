@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Web\StoreBatchRequest;
 use App\Models\Batch;
 use App\Models\FeedItem;
 use App\Models\Pen;
 use App\Models\Species;
-use Illuminate\Http\Request;
 
 class BatchController extends Controller
 {
@@ -26,17 +26,9 @@ class BatchController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreBatchRequest $request)
     {
-        $validated = $request->validate([
-            'batch_code' => 'required|string|unique:batches,batch_code',
-            'species_id' => 'required|exists:species,id',
-            'pen_id' => 'nullable|exists:pens,id',
-            'start_date' => 'required|date',
-            'expected_end_date' => 'nullable|date|after:start_date',
-            'notes' => 'nullable|string',
-        ]);
-
+        $validated = $request->validated();
         $validated['created_by'] = $request->user()->id;
         $validated['status'] = 'active';
 

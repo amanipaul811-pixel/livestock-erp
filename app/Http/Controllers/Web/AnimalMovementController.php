@@ -3,19 +3,15 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Web\StoreAnimalMovementRequest;
 use App\Models\Animal;
 use App\Models\AnimalMovement;
-use Illuminate\Http\Request;
 
 class AnimalMovementController extends Controller
 {
-    public function store(Request $request, Animal $animal)
+    public function store(StoreAnimalMovementRequest $request, Animal $animal)
     {
-        $validated = $request->validate([
-            'to_pen_id' => 'required|exists:pens,id',
-            'move_date' => 'required|date',
-            'reason' => 'nullable|string|max:150',
-        ]);
+        $validated = $request->validated();
 
         if ((int) $validated['to_pen_id'] === $animal->current_pen_id) {
             return back()->withErrors(['to_pen_id' => 'Animal is already in that pen.']);

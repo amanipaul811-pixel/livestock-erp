@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Web\StoreWarehouseRequest;
 use App\Models\Warehouse;
-use Illuminate\Http\Request;
 
 class WarehouseController extends Controller
 {
@@ -13,15 +13,9 @@ class WarehouseController extends Controller
         return view('warehouses.index', ['warehouses' => Warehouse::orderBy('name')->get()]);
     }
 
-    public function store(Request $request)
+    public function store(StoreWarehouseRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:100',
-            'location' => 'nullable|string|max:150',
-            'type' => 'required|in:feed,medicine,equipment,general',
-        ]);
-
-        Warehouse::create($validated);
+        Warehouse::create($request->validated());
 
         return redirect()->route('warehouses.index')->with('status', 'Warehouse added.');
     }

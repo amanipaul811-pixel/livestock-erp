@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Web\StoreCustomerRequest;
 use App\Models\Customer;
-use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
@@ -13,16 +13,9 @@ class CustomerController extends Controller
         return view('customers.index', ['customers' => Customer::orderBy('name')->get()]);
     }
 
-    public function store(Request $request)
+    public function store(StoreCustomerRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:150',
-            'phone' => 'nullable|string|max:30',
-            'email' => 'nullable|email|max:150',
-            'customer_type' => 'required|in:individual,butcher,trader,exporter,other',
-        ]);
-
-        Customer::create($validated);
+        Customer::create($request->validated());
 
         return redirect()->route('customers.index')->with('status', 'Customer added.');
     }

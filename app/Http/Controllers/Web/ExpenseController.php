@@ -3,21 +3,15 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Web\StoreExpenseRequest;
 use App\Models\Batch;
 use App\Models\Expense;
-use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
-    public function store(Request $request, Batch $batch)
+    public function store(StoreExpenseRequest $request, Batch $batch)
     {
-        $validated = $request->validate([
-            'category' => 'required|in:labor,utilities,transport,rent,other',
-            'expense_date' => 'required|date',
-            'amount' => 'required|numeric|min:0',
-            'description' => 'nullable|string',
-        ]);
-
+        $validated = $request->validated();
         $validated['batch_id'] = $batch->id;
         $validated['recorded_by'] = $request->user()->id;
 

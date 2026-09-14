@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\StorePurchaseOrderRequest;
+use App\Http\Requests\Api\UpdatePurchaseOrderRequest;
 use App\Models\PurchaseOrder;
-use Illuminate\Http\Request;
 
 class PurchaseOrderController extends Controller
 {
@@ -15,15 +16,9 @@ class PurchaseOrderController extends Controller
     }
 
     // POST /api/purchase-orders
-    public function store(Request $request)
+    public function store(StorePurchaseOrderRequest $request)
     {
-        $validated = $request->validate([
-            'supplier_id' => 'required|exists:suppliers,id',
-            'order_type' => 'required|in:animal,feed,medicine,other',
-            'order_date' => 'required|date',
-            'total_amount' => 'required|numeric|min:0',
-        ]);
-
+        $validated = $request->validated();
         $validated['po_number'] = 'PO-'.now()->format('Ymd').'-'.strtoupper(uniqid());
         $validated['status'] = 'pending';
 
@@ -44,13 +39,9 @@ class PurchaseOrderController extends Controller
     }
 
     // PATCH /api/purchase-orders/{purchaseOrder}
-    public function update(Request $request, PurchaseOrder $purchaseOrder)
+    public function update(UpdatePurchaseOrderRequest $request, PurchaseOrder $purchaseOrder)
     {
-        $validated = $request->validate([
-            'status' => 'required|in:pending,received,cancelled',
-        ]);
-
-        $purchaseOrder->update($validated);
+        $purchaseOrder->update($request->validated());
 
         return response()->json($purchaseOrder);
     }

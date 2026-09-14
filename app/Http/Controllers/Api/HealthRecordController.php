@@ -3,24 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\StoreHealthRecordRequest;
 use App\Models\Animal;
 use App\Models\HealthRecord;
-use Illuminate\Http\Request;
 
 class HealthRecordController extends Controller
 {
     // POST /api/animals/{animal}/health-records
-    public function store(Request $request, Animal $animal)
+    public function store(StoreHealthRecordRequest $request, Animal $animal)
     {
-        $validated = $request->validate([
-            'record_type' => 'required|in:vaccination,deworming,treatment,checkup,death',
-            'record_date' => 'required|date',
-            'description' => 'nullable|string',
-            'medicine_used' => 'nullable|string',
-            'cost' => 'nullable|numeric|min:0',
-            'cause_of_death' => 'nullable|string|required_if:record_type,death',
-        ]);
-
+        $validated = $request->validated();
         $validated['animal_id'] = $animal->id;
         $validated['performed_by'] = $request->user()->id ?? null;
 

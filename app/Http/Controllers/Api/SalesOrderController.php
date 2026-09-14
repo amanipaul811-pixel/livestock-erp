@@ -3,26 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\StoreSalesOrderRequest;
 use App\Models\Animal;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderItem;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class SalesOrderController extends Controller
 {
     // POST /api/sales-orders
     // Body: { customer_id, sale_date, items: [{ animal_id, sale_weight_kg, price_per_kg }] }
-    public function store(Request $request)
+    public function store(StoreSalesOrderRequest $request)
     {
-        $validated = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'sale_date' => 'required|date',
-            'items' => 'required|array|min:1',
-            'items.*.animal_id' => 'required|exists:animals,id',
-            'items.*.sale_weight_kg' => 'required|numeric|min:0',
-            'items.*.price_per_kg' => 'required|numeric|min:0',
-        ]);
+        $validated = $request->validated();
 
         $order = DB::transaction(function () use ($validated) {
             $total = collect($validated['items'])
