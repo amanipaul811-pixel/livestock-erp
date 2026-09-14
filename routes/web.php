@@ -11,6 +11,8 @@ use App\Http\Controllers\Web\FeedLogController;
 use App\Http\Controllers\Web\HealthRecordController;
 use App\Http\Controllers\Web\PaymentController;
 use App\Http\Controllers\Web\SalesOrderController;
+use App\Http\Controllers\Web\SupplierController;
+use App\Http\Controllers\Web\WarehouseController;
 use App\Http\Controllers\Web\WeighInController;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +44,12 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
     Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
+
+    Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
+    Route::post('/suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
+
+    Route::get('/warehouses', [WarehouseController::class, 'index'])->name('warehouses.index');
+    Route::post('/warehouses', [WarehouseController::class, 'store'])->name('warehouses.store');
 
     Route::get('/sales-orders/create', [SalesOrderController::class, 'create'])->name('sales-orders.create');
     Route::post('/sales-orders', [SalesOrderController::class, 'store'])->name('sales-orders.store');

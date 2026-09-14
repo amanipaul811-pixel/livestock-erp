@@ -4,13 +4,17 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\FeedItem;
+use App\Models\Warehouse;
 use Illuminate\Http\Request;
 
 class FeedItemController extends Controller
 {
     public function index()
     {
-        return view('feed-items.index', ['feedItems' => FeedItem::orderBy('name')->get()]);
+        return view('feed-items.index', [
+            'feedItems' => FeedItem::with('warehouse')->orderBy('name')->get(),
+            'warehouses' => Warehouse::orderBy('name')->get(),
+        ]);
     }
 
     public function store(Request $request)
@@ -19,6 +23,7 @@ class FeedItemController extends Controller
             'name' => 'required|string|max:100',
             'unit' => 'required|in:kg,bag,liter',
             'cost_per_unit' => 'required|numeric|min:0',
+            'warehouse_id' => 'nullable|exists:warehouses,id',
             'reorder_level' => 'nullable|numeric|min:0',
         ]);
 

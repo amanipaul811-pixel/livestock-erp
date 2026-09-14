@@ -9,7 +9,7 @@
     <div class="lg:col-span-2 bg-white rounded shadow overflow-hidden">
         <table class="w-full text-sm">
             <thead class="bg-gray-100 text-left text-gray-600">
-                <tr><th class="px-4 py-2">Name</th><th class="px-4 py-2">Unit</th><th class="px-4 py-2">Cost/Unit</th></tr>
+                <tr><th class="px-4 py-2">Name</th><th class="px-4 py-2">Unit</th><th class="px-4 py-2">Cost/Unit</th><th class="px-4 py-2">Warehouse</th></tr>
             </thead>
             <tbody>
                 @forelse ($feedItems as $item)
@@ -17,9 +17,10 @@
                         <td class="px-4 py-2 font-medium">{{ $item->name }}</td>
                         <td class="px-4 py-2">{{ $item->unit }}</td>
                         <td class="px-4 py-2">{{ number_format($item->cost_per_unit, 2) }}</td>
+                        <td class="px-4 py-2">{{ $item->warehouse->name ?? '—' }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="3" class="px-4 py-6 text-center text-gray-500">No feed items yet.</td></tr>
+                    <tr><td colspan="4" class="px-4 py-6 text-center text-gray-500">No feed items yet.</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -43,6 +44,15 @@
         <div>
             <label class="block text-sm font-medium mb-1">Cost per Unit</label>
             <input type="number" step="0.01" name="cost_per_unit" required class="w-full border rounded px-3 py-2 text-sm">
+        </div>
+        <div>
+            <label class="block text-sm font-medium mb-1">Warehouse</label>
+            <select name="warehouse_id" class="w-full border rounded px-3 py-2 text-sm">
+                <option value="">None</option>
+                @foreach ($warehouses as $warehouse)
+                    <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
+                @endforeach
+            </select>
         </div>
         <button type="submit" class="w-full bg-gray-900 text-white text-sm px-3 py-2 rounded hover:bg-gray-700">Add</button>
     </form>

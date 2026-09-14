@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\FeedLogController;
 use App\Http\Controllers\Api\HealthRecordController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\SalesOrderController;
+use App\Http\Controllers\Api\SupplierController;
+use App\Http\Controllers\Api\WarehouseController;
 use App\Http\Controllers\Api\WeighInController;
 use Illuminate\Support\Facades\Route;
 
@@ -62,4 +64,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- Payments (against a sales order) ---
     Route::get('/sales-orders/{salesOrder}/payments', [PaymentController::class, 'index']);
     Route::post('/sales-orders/{salesOrder}/payments', [PaymentController::class, 'store']);
+
+    // --- Suppliers & warehouses ---
+    Route::get('/suppliers', [SupplierController::class, 'index']);
+    Route::post('/suppliers', [SupplierController::class, 'store']);
+    Route::get('/warehouses', [WarehouseController::class, 'index']);
+    Route::post('/warehouses', [WarehouseController::class, 'store']);
 });
