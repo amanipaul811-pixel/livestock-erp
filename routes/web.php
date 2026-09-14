@@ -12,6 +12,7 @@ use App\Http\Controllers\Web\FeedLogController;
 use App\Http\Controllers\Web\HealthRecordController;
 use App\Http\Controllers\Web\PaymentController;
 use App\Http\Controllers\Web\PurchaseOrderController;
+use App\Http\Controllers\Web\RationFormulaController;
 use App\Http\Controllers\Web\SalesOrderController;
 use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\WarehouseController;
@@ -53,6 +54,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/warehouses', [WarehouseController::class, 'index'])->name('warehouses.index');
     Route::post('/warehouses', [WarehouseController::class, 'store'])->name('warehouses.store');
+
+    Route::get('/ration-formulas', [RationFormulaController::class, 'index'])->name('ration-formulas.index');
+    Route::get('/ration-formulas/create', [RationFormulaController::class, 'create'])->name('ration-formulas.create');
+    Route::post('/ration-formulas', [RationFormulaController::class, 'store'])->name('ration-formulas.store');
+    Route::get('/ration-formulas/{rationFormula}', [RationFormulaController::class, 'show'])->name('ration-formulas.show');
 
     Route::get('/sales-orders/create', [SalesOrderController::class, 'create'])->name('sales-orders.create');
     Route::post('/sales-orders', [SalesOrderController::class, 'store'])->name('sales-orders.store');

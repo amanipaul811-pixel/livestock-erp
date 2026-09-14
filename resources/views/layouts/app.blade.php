@@ -27,6 +27,7 @@
                         <a href="{{ route('customers.index') }}" class="block px-4 py-2 hover:bg-gray-100">Customers</a>
                         <a href="{{ route('suppliers.index') }}" class="block px-4 py-2 hover:bg-gray-100">Suppliers</a>
                         <a href="{{ route('warehouses.index') }}" class="block px-4 py-2 hover:bg-gray-100">Warehouses</a>
+                        <a href="{{ route('ration-formulas.index') }}" class="block px-4 py-2 hover:bg-gray-100">Ration Formulas</a>
                     </div>
                 </div>
             </div>

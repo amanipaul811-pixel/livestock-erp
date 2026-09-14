@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\FeedLogController;
 use App\Http\Controllers\Api\HealthRecordController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PurchaseOrderController;
+use App\Http\Controllers\Api\RationFormulaController;
 use App\Http\Controllers\Api\SalesOrderController;
 use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\WarehouseController;
@@ -76,6 +77,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/suppliers', [SupplierController::class, 'store']);
     Route::get('/warehouses', [WarehouseController::class, 'index']);
     Route::post('/warehouses', [WarehouseController::class, 'store']);
+
+    // --- Ration formulas ---
+    Route::get('/ration-formulas', [RationFormulaController::class, 'index']);
+    Route::post('/ration-formulas', [RationFormulaController::class, 'store']);
+    Route::get('/ration-formulas/{rationFormula}', [RationFormulaController::class, 'show']);
 
     // --- Purchase orders ---
     Route::get('/purchase-orders', [PurchaseOrderController::class, 'index']);
