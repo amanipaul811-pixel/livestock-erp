@@ -12,8 +12,12 @@ class RolePermissionSeeder extends Seeder
     {
         $permissions = [
             'batch.create', 'batch.update', 'batch.close',
-            'animal.create', 'weighin.create', 'feedlog.create',
-            'healthrecord.create', 'salesorder.create', 'sale.approve',
+            'animal.create', 'animalmovement.create',
+            'weighin.create', 'feedlog.create', 'healthrecord.create',
+            'expense.create', 'rationformula.create',
+            'salesorder.create', 'sale.approve',
+            'purchaseorder.create', 'purchaseorder.update',
+            'supplier.create', 'warehouse.create',
             'dashboard.view', 'user.manage',
         ];
 
@@ -23,8 +27,13 @@ class RolePermissionSeeder extends Seeder
 
         $roles = [
             'Admin' => $permissions,
-            'Farm Manager' => ['batch.create', 'batch.update', 'batch.close', 'animal.create', 'dashboard.view'],
-            'Feeder' => ['feedlog.create', 'weighin.create'],
+            'Farm Manager' => [
+                'batch.create', 'batch.update', 'batch.close', 'animal.create',
+                'animalmovement.create', 'expense.create', 'rationformula.create',
+                'purchaseorder.create', 'purchaseorder.update', 'supplier.create',
+                'warehouse.create', 'dashboard.view',
+            ],
+            'Feeder' => ['feedlog.create', 'weighin.create', 'animalmovement.create'],
             'Vet' => ['healthrecord.create'],
             'Sales' => ['salesorder.create', 'sale.approve', 'dashboard.view'],
         ];
