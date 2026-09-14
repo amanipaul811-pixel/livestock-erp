@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AnimalController;
+use App\Http\Controllers\Api\AnimalMovementController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BatchController;
 use App\Http\Controllers\Api\DashboardController;
@@ -45,6 +46,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- Weigh-ins (growth tracking) ---
     Route::get('/animals/{animal}/weigh-ins', [WeighInController::class, 'index']);
     Route::post('/animals/{animal}/weigh-ins', [WeighInController::class, 'store']);
+
+    // --- Animal movements (pen transfers) ---
+    Route::get('/animals/{animal}/movements', [AnimalMovementController::class, 'index']);
+    Route::post('/animals/{animal}/movements', [AnimalMovementController::class, 'store']);
 
     // --- Feed logs (per batch/pen) ---
     Route::get('/batches/{batch}/feed-logs', [FeedLogController::class, 'index']);

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Web\AnimalController;
+use App\Http\Controllers\Web\AnimalMovementController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\BatchController;
 use App\Http\Controllers\Web\CustomerController;
@@ -37,6 +38,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/animals/{animal}/weigh-ins', [WeighInController::class, 'store'])->name('weigh-ins.store');
     Route::post('/animals/{animal}/health-records', [HealthRecordController::class, 'store'])->name('health-records.store');
+    Route::post('/animals/{animal}/movements', [AnimalMovementController::class, 'store'])->name('movements.store');
     Route::post('/batches/{batch}/feed-logs', [FeedLogController::class, 'store'])->name('feed-logs.store');
     Route::post('/batches/{batch}/expenses', [ExpenseController::class, 'store'])->name('expenses.store');
 

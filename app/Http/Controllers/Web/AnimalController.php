@@ -45,13 +45,14 @@ class AnimalController extends Controller
 
     public function show(Animal $animal)
     {
-        $animal->load(['species', 'batch', 'currentPen', 'supplier', 'weighIns', 'healthRecords']);
+        $animal->load(['species', 'batch', 'currentPen', 'supplier', 'weighIns', 'healthRecords', 'movements.fromPen', 'movements.toPen']);
 
         return view('animals.show', [
             'animal' => $animal,
             'latestWeight' => $animal->latestWeightKg(),
             'adg' => $animal->averageDailyGainKg(),
             'readyToSell' => $animal->isReadyToSell(),
+            'pens' => Pen::where('is_active', true)->orderBy('name')->get(),
         ]);
     }
 }

@@ -9,6 +9,7 @@
         <p class="text-sm text-gray-500">
             {{ $animal->species->name }} &middot; {{ $animal->sex }} &middot;
             Batch: <a href="{{ route('batches.show', $animal->batch) }}" class="underline">{{ $animal->batch->batch_code }}</a>
+            &middot; Pen: {{ $animal->currentPen->name ?? 'Unassigned' }}
             &middot; Status: {{ $animal->status }}
         </p>
     </div>
@@ -91,5 +92,41 @@
         </form>
         @endif
     </div>
+</div>
+
+<div class="bg-white rounded shadow p-4 mt-6 max-w-xl">
+    <h2 class="font-semibold mb-3">Pen Movements</h2>
+    <table class="w-full text-sm mb-4">
+        <thead class="text-left text-gray-500">
+            <tr><th class="py-1">Date</th><th class="py-1">From</th><th class="py-1">To</th><th class="py-1">Reason</th></tr>
+        </thead>
+        <tbody>
+            @forelse ($animal->movements as $movement)
+                <tr class="border-t">
+                    <td class="py-1.5">{{ $movement->move_date->format('Y-m-d') }}</td>
+                    <td class="py-1.5">{{ $movement->fromPen->name ?? '—' }}</td>
+                    <td class="py-1.5">{{ $movement->toPen->name }}</td>
+                    <td class="py-1.5">{{ $movement->reason ?? '—' }}</td>
+                </tr>
+            @empty
+                <tr><td colspan="4" class="py-4 text-center text-gray-500">No pen transfers yet.</td></tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    @if ($animal->status === 'on_feed')
+        <form method="POST" action="{{ route('movements.store', $animal) }}" class="border-t pt-4 grid grid-cols-2 gap-2">
+            @csrf
+            <select name="to_pen_id" required class="border rounded px-2 py-1.5 text-sm">
+                <option value="">Move to pen</option>
+                @foreach ($pens as $pen)
+                    <option value="{{ $pen->id }}" @disabled($pen->id === $animal->current_pen_id)>{{ $pen->name }} ({{ $pen->stage }})</option>
+                @endforeach
+            </select>
+            <input type="date" name="move_date" value="{{ now()->format('Y-m-d') }}" required class="border rounded px-2 py-1.5 text-sm">
+            <input type="text" name="reason" placeholder="Reason (optional)" class="border rounded px-2 py-1.5 text-sm col-span-2">
+            <button type="submit" class="col-span-2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded hover:bg-gray-700">Move Animal</button>
+        </form>
+    @endif
 </div>
 @endsection
