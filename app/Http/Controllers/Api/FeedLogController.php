@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Batch;
 use App\Models\FeedItem;
 use App\Models\FeedLog;
 use Illuminate\Http\Request;
@@ -10,7 +11,7 @@ use Illuminate\Http\Request;
 class FeedLogController extends Controller
 {
     // POST /api/batches/{batch}/feed-logs — log daily feed given to a batch/pen
-    public function store(Request $request, int $batchId)
+    public function store(Request $request, Batch $batch)
     {
         $validated = $request->validate([
             'feed_item_id' => 'required|exists:feed_items,id',
@@ -20,7 +21,7 @@ class FeedLogController extends Controller
 
         $feedItem = FeedItem::findOrFail($validated['feed_item_id']);
 
-        $validated['batch_id'] = $batchId;
+        $validated['batch_id'] = $batch->id;
         $validated['total_cost'] = $validated['quantity_kg'] * $feedItem->cost_per_unit;
         $validated['recorded_by'] = $request->user()->id ?? null;
 
@@ -30,10 +31,8 @@ class FeedLogController extends Controller
     }
 
     // GET /api/batches/{batch}/feed-logs
-    public function index(int $batchId)
+    public function index(Batch $batch)
     {
-        $logs = FeedLog::where('batch_id', $batchId)->with('feedItem')->orderBy('feed_date')->get();
-
-        return response()->json($logs);
+        return response()->json($batch->feedLogs()->with('feedItem')->orderBy('feed_date')->get());
     }
 }

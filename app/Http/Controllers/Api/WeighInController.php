@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Animal;
 use App\Models\WeighIn;
 use Illuminate\Http\Request;
 
 class WeighInController extends Controller
 {
     // POST /api/animals/{animal}/weigh-ins — log a periodic weigh-in
-    public function store(Request $request, int $animalId)
+    public function store(Request $request, Animal $animal)
     {
         $validated = $request->validate([
             'weigh_date' => 'required|date',
@@ -17,7 +18,7 @@ class WeighInController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $validated['animal_id'] = $animalId;
+        $validated['animal_id'] = $animal->id;
         $validated['recorded_by'] = $request->user()->id ?? null;
 
         $weighIn = WeighIn::create($validated);
@@ -26,10 +27,8 @@ class WeighInController extends Controller
     }
 
     // GET /api/animals/{animal}/weigh-ins — growth history for the weight chart
-    public function index(int $animalId)
+    public function index(Animal $animal)
     {
-        $weighIns = WeighIn::where('animal_id', $animalId)->orderBy('weigh_date')->get();
-
-        return response()->json($weighIns);
+        return response()->json($animal->weighIns()->orderBy('weigh_date')->get());
     }
 }

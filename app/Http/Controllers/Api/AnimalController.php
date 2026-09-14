@@ -4,14 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Animal;
+use App\Models\Batch;
 use Illuminate\Http\Request;
 
 class AnimalController extends Controller
 {
     // GET /api/batches/{batch}/animals
-    public function index(int $batchId)
+    public function index(Batch $batch)
     {
-        $animals = Animal::where('batch_id', $batchId)->with(['species', 'currentPen'])->get();
+        $animals = $batch->animals()->with(['species', 'currentPen'])->get();
 
         return response()->json($animals->map(fn (Animal $a) => array_merge($a->toArray(), [
             'latest_weight_kg' => $a->latestWeightKg(),

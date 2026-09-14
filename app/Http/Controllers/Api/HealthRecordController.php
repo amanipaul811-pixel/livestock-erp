@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class HealthRecordController extends Controller
 {
     // POST /api/animals/{animal}/health-records
-    public function store(Request $request, int $animalId)
+    public function store(Request $request, Animal $animal)
     {
         $validated = $request->validate([
             'record_type' => 'required|in:vaccination,deworming,treatment,checkup,death',
@@ -21,24 +21,22 @@ class HealthRecordController extends Controller
             'cause_of_death' => 'nullable|string|required_if:record_type,death',
         ]);
 
-        $validated['animal_id'] = $animalId;
+        $validated['animal_id'] = $animal->id;
         $validated['performed_by'] = $request->user()->id ?? null;
 
         $record = HealthRecord::create($validated);
 
         // A death record retires the animal from active feeding automatically
         if ($validated['record_type'] === 'death') {
-            Animal::where('id', $animalId)->update(['status' => 'dead']);
+            $animal->update(['status' => 'dead']);
         }
 
         return response()->json($record, 201);
     }
 
     // GET /api/animals/{animal}/health-records
-    public function index(int $animalId)
+    public function index(Animal $animal)
     {
-        return response()->json(
-            HealthRecord::where('animal_id', $animalId)->orderBy('record_date')->get()
-        );
+        return response()->json($animal->healthRecords()->orderBy('record_date')->get());
     }
 }
