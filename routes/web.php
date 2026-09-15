@@ -56,6 +56,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/batches/{batch}/animals/create', [AnimalController::class, 'create'])->name('animals.create')->middleware('permission:animal.create');
     Route::post('/batches/{batch}/animals', [AnimalController::class, 'store'])->name('animals.store')->middleware('permission:animal.create');
     Route::get('/animals/{animal}', [AnimalController::class, 'show'])->name('animals.show');
+    Route::get('/animals/{animal}/qr-code', [AnimalController::class, 'qrCode'])->name('animals.qr-code');
+    Route::get('/animals/{animal}/tag', [AnimalController::class, 'tag'])->name('animals.tag');
+
+    Route::get('/scan', fn () => view('scan'))->name('scan');
 
     Route::post('/animals/{animal}/weigh-ins', [WeighInController::class, 'store'])->name('weigh-ins.store')->middleware('permission:weighin.create');
     Route::post('/animals/{animal}/health-records', [HealthRecordController::class, 'store'])->name('health-records.store')->middleware('permission:healthrecord.create');

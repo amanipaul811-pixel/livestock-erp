@@ -13,9 +13,15 @@
             &middot; Status: {{ $animal->status }}
         </p>
     </div>
-    @if ($animal->status === 'on_feed' && auth()->user()->hasPermission('salesorder.create'))
-        <a href="{{ route('sales-orders.create') }}" class="bg-indigo-600 text-white text-sm px-4 py-2 rounded-md hover:bg-indigo-700">Sell</a>
-    @endif
+    <div class="flex items-center gap-3">
+        <a href="{{ route('animals.tag', $animal) }}" target="_blank" class="flex items-center gap-2 border border-gray-300 text-sm px-3 py-2 rounded-md hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">
+            <img src="{{ route('animals.qr-code', $animal) }}" alt="QR code" class="h-8 w-8">
+            Print Tag
+        </a>
+        @if ($animal->status === 'on_feed' && auth()->user()->hasPermission('salesorder.create'))
+            <a href="{{ route('sales-orders.create') }}" class="bg-indigo-600 text-white text-sm px-4 py-2 rounded-md hover:bg-indigo-700">Sell</a>
+        @endif
+    </div>
 </div>
 
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

@@ -8,6 +8,9 @@ use App\Models\Animal;
 use App\Models\Batch;
 use App\Models\Pen;
 use App\Models\Supplier;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Writer\SvgWriter;
+use Illuminate\Http\Response;
 
 class AnimalController extends Controller
 {
@@ -43,5 +46,23 @@ class AnimalController extends Controller
             'readyToSell' => $animal->isReadyToSell(),
             'pens' => Pen::where('is_active', true)->orderBy('name')->get(),
         ]);
+    }
+
+    public function qrCode(Animal $animal)
+    {
+        $result = (new Builder(writer: new SvgWriter()))->build(
+            data: route('animals.show', $animal),
+            size: 240,
+            margin: 8,
+        );
+
+        return new Response($result->getString(), 200, ['Content-Type' => $result->getMimeType()]);
+    }
+
+    public function tag(Animal $animal)
+    {
+        $animal->load('species');
+
+        return view('animals.tag', ['animal' => $animal]);
     }
 }

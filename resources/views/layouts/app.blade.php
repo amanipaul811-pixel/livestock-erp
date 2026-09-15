@@ -45,6 +45,7 @@
                     ['dashboard', route('dashboard'), 'Dashboard', 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
                     ['batches.*', route('batches.index'), 'Batches', 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'],
                     ['purchase-orders.*', route('purchase-orders.index'), 'Purchase Orders', 'M9 2a1 1 0 00-1 1v1H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-3V3a1 1 0 00-1-1H9z'],
+                    ['scan', route('scan'), 'Scan', 'M4 8V4h4M4 16v4h4M16 4h4v4M16 20h4v-4M4 12h16'],
                 ];
             @endphp
             @foreach ($links as [$routePattern, $href, $label, $icon])
