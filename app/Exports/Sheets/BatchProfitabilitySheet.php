@@ -18,11 +18,10 @@ class BatchProfitabilitySheet implements FromCollection, WithHeadings, WithTitle
         $rows = $this->batchRows->map(fn (array $row) => [
             $row['batch']->batch_code,
             $row['batch']->status,
-            $row['revenue'],
-            $row['purchase_cost'],
-            $row['feed_cost'],
-            $row['health_cost'],
-            $row['other_expenses'],
+            $row['realized_revenue'],
+            $row['realized_cogs'],
+            $row['mortality_loss'],
+            $row['wip_value'],
             $row['net_profit'],
         ]);
 
@@ -30,10 +29,9 @@ class BatchProfitabilitySheet implements FromCollection, WithHeadings, WithTitle
             'TOTAL',
             '',
             $this->totals['revenue'],
-            $this->totals['purchase_cost'],
-            $this->totals['feed_cost'],
-            $this->totals['health_cost'],
-            $this->totals['other_expenses'] + $this->totals['overhead_expenses'],
+            $this->totals['cogs'] + $this->totals['overhead_expenses'],
+            $this->totals['mortality_loss'],
+            '',
             $this->totals['net_profit'],
         ]);
 
@@ -42,7 +40,7 @@ class BatchProfitabilitySheet implements FromCollection, WithHeadings, WithTitle
 
     public function headings(): array
     {
-        return ['Batch', 'Status', 'Revenue', 'Purchase Cost', 'Feed Cost', 'Health Cost', 'Other Expenses', 'Net Profit'];
+        return ['Batch', 'Status', 'Revenue', 'COGS', 'Mortality Loss', 'WIP Value', 'Net Profit'];
     }
 
     public function title(): string

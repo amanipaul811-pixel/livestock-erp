@@ -98,4 +98,42 @@ class BatchKpiTest extends TestCase
 
         $this->assertNull($batch->feedConversionRatio());
     }
+
+    public function test_accrual_breakdown_treats_unsold_animals_as_wip_not_loss(): void
+    {
+        $batch = Batch::factory()->create();
+        Animal::factory()->create(['batch_id' => $batch->id, 'purchase_price' => 100, 'status' => 'on_feed']);
+        Animal::factory()->create(['batch_id' => $batch->id, 'purchase_price' => 100, 'status' => 'on_feed']);
+        FeedLog::factory()->create(['batch_id' => $batch->id, 'total_cost' => 40]);
+
+        $breakdown = $batch->accrualBreakdown();
+
+        $this->assertSame(0.0, $breakdown['realized_revenue']);
+        $this->assertSame(0.0, $breakdown['realized_cogs']);
+        $this->assertSame(0.0, $breakdown['mortality_loss']);
+        $this->assertSame(240.0, $breakdown['wip_value']); // (100 + 20 shared feed) * 2
+        $this->assertSame(0.0, $breakdown['net_profit']);
+    }
+
+    public function test_accrual_breakdown_splits_sold_dead_and_on_feed_animals(): void
+    {
+        $batch = Batch::factory()->create();
+        $sold1 = Animal::factory()->create(['batch_id' => $batch->id, 'purchase_price' => 100, 'status' => 'sold']);
+        $sold2 = Animal::factory()->create(['batch_id' => $batch->id, 'purchase_price' => 100, 'status' => 'sold']);
+        Animal::factory()->create(['batch_id' => $batch->id, 'purchase_price' => 100, 'status' => 'dead']);
+        Animal::factory()->create(['batch_id' => $batch->id, 'purchase_price' => 100, 'status' => 'on_feed']);
+        FeedLog::factory()->create(['batch_id' => $batch->id, 'total_cost' => 40]);
+        HealthRecord::factory()->create(['animal_id' => $sold1->id, 'cost' => 5]);
+        SalesOrderItem::factory()->create(['animal_id' => $sold1->id, 'line_total' => 200]);
+        SalesOrderItem::factory()->create(['animal_id' => $sold2->id, 'line_total' => 150]);
+
+        $breakdown = $batch->accrualBreakdown();
+
+        // Shared feed+other cost is 40 / 4 head = 10 each.
+        $this->assertSame(350.0, $breakdown['realized_revenue']);
+        $this->assertSame(225.0, $breakdown['realized_cogs']); // (100+5+10) + (100+0+10)
+        $this->assertSame(110.0, $breakdown['mortality_loss']); // 100+0+10
+        $this->assertSame(110.0, $breakdown['wip_value']); // 100+0+10
+        $this->assertSame(15.0, $breakdown['net_profit']); // 350 - 225 - 110
+    }
 }

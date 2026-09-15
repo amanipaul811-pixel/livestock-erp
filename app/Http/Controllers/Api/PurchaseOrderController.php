@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\ReceivePurchaseOrder;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StorePurchaseOrderRequest;
 use App\Http\Requests\Api\UpdatePurchaseOrderRequest;
@@ -39,9 +40,15 @@ class PurchaseOrderController extends Controller
     }
 
     // PATCH /api/purchase-orders/{purchaseOrder}
-    public function update(UpdatePurchaseOrderRequest $request, PurchaseOrder $purchaseOrder)
+    public function update(UpdatePurchaseOrderRequest $request, PurchaseOrder $purchaseOrder, ReceivePurchaseOrder $receivePurchaseOrder)
     {
+        $wasReceived = $purchaseOrder->status === 'received';
+
         $purchaseOrder->update($request->validated());
+
+        if (! $wasReceived && $purchaseOrder->status === 'received') {
+            $receivePurchaseOrder->handle($purchaseOrder, $request->user());
+        }
 
         return response()->json($purchaseOrder);
     }

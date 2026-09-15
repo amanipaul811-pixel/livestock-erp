@@ -7,6 +7,7 @@
         h1 { font-size: 18px; margin-bottom: 0; }
         h2 { font-size: 13px; margin: 18px 0 6px; }
         p.subtitle { color: #6b7280; margin-top: 4px; }
+        p.note { color: #6b7280; font-size: 10px; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
         th, td { border: 1px solid #e5e7eb; padding: 5px 8px; text-align: left; }
         th { background-color: #f9fafb; }
@@ -20,18 +21,31 @@
 <body>
     <h1>Profit &amp; Loss Report</h1>
     <p class="subtitle">{{ $from }} to {{ $to }}</p>
+    <p class="note">Accrual basis: revenue and COGS are recognized only when an animal sells. Animals still on feed carry their cost as WIP inventory, not a loss.</p>
 
     <table class="summary-table">
         <tr>
-            <td>Revenue</td><td class="num">{{ number_format($totals['revenue'], 2) }}</td>
+            <td>Realized Revenue</td><td class="num">{{ number_format($totals['revenue'], 2) }}</td>
             <td>Net Profit</td>
             <td class="num {{ $totals['net_profit'] >= 0 ? 'positive' : 'negative' }}">{{ number_format($totals['net_profit'], 2) }}</td>
         </tr>
         <tr>
-            <td>Total Costs</td>
-            <td class="num">{{ number_format($totals['purchase_cost'] + $totals['feed_cost'] + $totals['health_cost'] + $totals['other_expenses'] + $totals['overhead_expenses'], 2) }}</td>
-            <td>Overhead (unassigned)</td>
-            <td class="num">{{ number_format($totals['overhead_expenses'], 2) }}</td>
+            <td>COGS + Overhead</td>
+            <td class="num">{{ number_format($totals['cogs'] + $totals['overhead_expenses'], 2) }}</td>
+            <td>Mortality Loss</td>
+            <td class="num">{{ number_format($totals['mortality_loss'], 2) }}</td>
+        </tr>
+    </table>
+
+    <h2>Balance Sheet Snapshot (as of today)</h2>
+    <table class="summary-table">
+        <tr>
+            <td>Livestock WIP Value</td><td class="num">{{ number_format($wipValue, 2) }}</td>
+            <td>Feed Inventory Value</td><td class="num">{{ number_format($feedInventoryValue, 2) }}</td>
+        </tr>
+        <tr>
+            <td>Accounts Receivable</td><td class="num">{{ number_format($totalReceivable, 2) }}</td>
+            <td>Accounts Payable</td><td class="num">{{ number_format($totalPayable, 2) }}</td>
         </tr>
     </table>
 
@@ -40,8 +54,8 @@
         <thead>
             <tr>
                 <th>Batch</th><th>Status</th>
-                <th class="num">Revenue</th><th class="num">Purchase</th><th class="num">Feed</th>
-                <th class="num">Health</th><th class="num">Other</th><th class="num">Net Profit</th>
+                <th class="num">Revenue</th><th class="num">COGS</th><th class="num">Mortality</th>
+                <th class="num">WIP Value</th><th class="num">Net Profit</th>
             </tr>
         </thead>
         <tbody>
@@ -49,25 +63,39 @@
                 <tr>
                     <td>{{ $row['batch']->batch_code }}</td>
                     <td>{{ $row['batch']->status }}</td>
-                    <td class="num">{{ number_format($row['revenue'], 2) }}</td>
-                    <td class="num">{{ number_format($row['purchase_cost'], 2) }}</td>
-                    <td class="num">{{ number_format($row['feed_cost'], 2) }}</td>
-                    <td class="num">{{ number_format($row['health_cost'], 2) }}</td>
-                    <td class="num">{{ number_format($row['other_expenses'], 2) }}</td>
+                    <td class="num">{{ number_format($row['realized_revenue'], 2) }}</td>
+                    <td class="num">{{ number_format($row['realized_cogs'], 2) }}</td>
+                    <td class="num">{{ number_format($row['mortality_loss'], 2) }}</td>
+                    <td class="num">{{ number_format($row['wip_value'], 2) }}</td>
                     <td class="num {{ $row['net_profit'] >= 0 ? 'positive' : 'negative' }}">{{ number_format($row['net_profit'], 2) }}</td>
                 </tr>
             @empty
-                <tr><td colspan="8">No batches started in this period.</td></tr>
+                <tr><td colspan="7">No batches started in this period.</td></tr>
             @endforelse
-            <tr class="total">
-                <td colspan="2">TOTAL</td>
-                <td class="num">{{ number_format($totals['revenue'], 2) }}</td>
-                <td class="num">{{ number_format($totals['purchase_cost'], 2) }}</td>
-                <td class="num">{{ number_format($totals['feed_cost'], 2) }}</td>
-                <td class="num">{{ number_format($totals['health_cost'], 2) }}</td>
-                <td class="num">{{ number_format($totals['other_expenses'], 2) }}</td>
-                <td class="num">{{ number_format($totals['net_profit'], 2) }}</td>
-            </tr>
+        </tbody>
+    </table>
+
+    <h2>Accounts Receivable Aging</h2>
+    <table>
+        <thead><tr><th>Customer</th><th>Invoice</th><th class="num">Balance</th><th>Age</th></tr></thead>
+        <tbody>
+            @forelse ($accountsReceivable as $row)
+                <tr><td>{{ $row['party'] }}</td><td>{{ $row['reference'] }}</td><td class="num">{{ number_format($row['balance'], 2) }}</td><td>{{ $row['bucket'] }}</td></tr>
+            @empty
+                <tr><td colspan="4">Nothing outstanding.</td></tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    <h2>Accounts Payable Aging</h2>
+    <table>
+        <thead><tr><th>Supplier</th><th>PO</th><th class="num">Balance</th><th>Age</th></tr></thead>
+        <tbody>
+            @forelse ($accountsPayable as $row)
+                <tr><td>{{ $row['party'] }}</td><td>{{ $row['reference'] }}</td><td class="num">{{ number_format($row['balance'], 2) }}</td><td>{{ $row['bucket'] }}</td></tr>
+            @empty
+                <tr><td colspan="4">Nothing outstanding.</td></tr>
+            @endforelse
         </tbody>
     </table>
 

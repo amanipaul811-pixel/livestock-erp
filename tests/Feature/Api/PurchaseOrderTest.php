@@ -2,6 +2,9 @@
 
 namespace Tests\Feature\Api;
 
+use App\Models\Expense;
+use App\Models\FeedItem;
+use App\Models\FeedStockMovement;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -20,7 +23,7 @@ class PurchaseOrderTest extends TestCase
 
         $response = $this->postJson('/api/purchase-orders', [
             'supplier_id' => $supplier->id,
-            'order_type' => 'feed',
+            'order_type' => 'animal',
             'order_date' => now()->toDateString(),
             'total_amount' => 2500,
         ]);
@@ -57,6 +60,56 @@ class PurchaseOrderTest extends TestCase
         $response = $this->patchJson("/api/purchase-orders/{$order->id}", ['status' => 'received']);
 
         $response->assertStatus(422)->assertJsonValidationErrors('status');
+    }
+
+    public function test_a_feed_purchase_order_requires_a_feed_item_and_quantity(): void
+    {
+        Sanctum::actingAs($this->userWithRole('Farm Manager'));
+        $supplier = Supplier::factory()->create();
+
+        $response = $this->postJson('/api/purchase-orders', [
+            'supplier_id' => $supplier->id,
+            'order_type' => 'feed',
+            'order_date' => now()->toDateString(),
+            'total_amount' => 2500,
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors(['feed_item_id', 'quantity_kg']);
+    }
+
+    public function test_marking_a_feed_order_received_adds_stock(): void
+    {
+        Sanctum::actingAs($this->userWithRole('Farm Manager'));
+        $feedItem = FeedItem::factory()->create();
+        $order = PurchaseOrder::factory()->create([
+            'status' => 'pending', 'order_type' => 'feed', 'feed_item_id' => $feedItem->id, 'quantity_kg' => 300,
+        ]);
+
+        $this->patchJson("/api/purchase-orders/{$order->id}", ['status' => 'received'])->assertOk();
+
+        $this->assertSame(300.0, $feedItem->fresh()->currentStock());
+        $this->assertDatabaseHas('feed_stock_movements', ['feed_item_id' => $feedItem->id, 'type' => 'in', 'quantity_kg' => 300]);
+    }
+
+    public function test_marking_a_medicine_order_received_creates_an_expense(): void
+    {
+        Sanctum::actingAs($this->userWithRole('Farm Manager'));
+        $order = PurchaseOrder::factory()->create(['status' => 'pending', 'order_type' => 'medicine', 'total_amount' => 150]);
+
+        $this->patchJson("/api/purchase-orders/{$order->id}", ['status' => 'received'])->assertOk();
+
+        $this->assertDatabaseHas('expenses', ['batch_id' => null, 'category' => 'other', 'amount' => 150]);
+    }
+
+    public function test_marking_an_animal_order_received_creates_no_side_effect(): void
+    {
+        Sanctum::actingAs($this->userWithRole('Farm Manager'));
+        $order = PurchaseOrder::factory()->create(['status' => 'pending', 'order_type' => 'animal', 'total_amount' => 2500]);
+
+        $this->patchJson("/api/purchase-orders/{$order->id}", ['status' => 'received'])->assertOk();
+
+        $this->assertSame(0, Expense::count());
+        $this->assertSame(0, FeedStockMovement::count());
     }
 
     public function test_vet_cannot_create_a_purchase_order(): void

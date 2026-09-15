@@ -9,6 +9,9 @@
         <p class="text-sm text-gray-500 dark:text-gray-400">
             Supplier: {{ $order->supplier->name }} &middot; Type: {{ $order->order_type }} &middot;
             Date: {{ $order->order_date->format('Y-m-d') }} &middot; Status: {{ $order->status }}
+            @if ($order->order_type === 'feed' && $order->feedItem)
+                &middot; {{ $order->quantity_kg }} kg of {{ $order->feedItem->name }}
+            @endif
         </p>
     </div>
     @if ($order->status === 'pending' && auth()->user()->hasPermission('purchaseorder.update'))

@@ -9,13 +9,18 @@ class PurchaseOrder extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['po_number', 'supplier_id', 'order_type', 'order_date', 'total_amount', 'status'];
+    protected $fillable = ['po_number', 'supplier_id', 'order_type', 'feed_item_id', 'quantity_kg', 'order_date', 'total_amount', 'status'];
 
     protected $casts = ['order_date' => 'date'];
 
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    public function feedItem()
+    {
+        return $this->belongsTo(FeedItem::class);
     }
 
     public function payments()

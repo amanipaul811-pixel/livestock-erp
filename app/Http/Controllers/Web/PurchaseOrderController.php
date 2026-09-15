@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Actions\ReceivePurchaseOrder;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\StorePurchaseOrderRequest;
 use App\Http\Requests\Web\UpdatePurchaseOrderStatusRequest;
+use App\Models\FeedItem;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
 
@@ -21,6 +23,7 @@ class PurchaseOrderController extends Controller
     {
         return view('purchase-orders.create', [
             'suppliers' => Supplier::orderBy('name')->get(),
+            'feedItems' => FeedItem::orderBy('name')->get(),
         ]);
     }
 
@@ -47,9 +50,15 @@ class PurchaseOrderController extends Controller
         ]);
     }
 
-    public function updateStatus(UpdatePurchaseOrderStatusRequest $request, PurchaseOrder $purchaseOrder)
+    public function updateStatus(UpdatePurchaseOrderStatusRequest $request, PurchaseOrder $purchaseOrder, ReceivePurchaseOrder $receivePurchaseOrder)
     {
+        $wasReceived = $purchaseOrder->status === 'received';
+
         $purchaseOrder->update($request->validated());
+
+        if (! $wasReceived && $purchaseOrder->status === 'received') {
+            $receivePurchaseOrder->handle($purchaseOrder, $request->user());
+        }
 
         return redirect()->route('purchase-orders.show', $purchaseOrder)->with('status', 'Status updated.');
     }
