@@ -144,5 +144,6 @@
             @yield('content')
         </main>
     @endauth
+    @stack('scripts')
 </body>
 </html>
