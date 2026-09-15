@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class RationFormulaItem extends Model
 {
+    use HasFactory;
+
     protected $fillable = ['ration_formula_id', 'feed_item_id', 'quantity_kg_per_head'];
 
     public function rationFormula()

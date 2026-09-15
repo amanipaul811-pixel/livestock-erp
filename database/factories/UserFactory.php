@@ -26,7 +26,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'role_id' => fn () => Role::firstOrCreate(['name' => 'Feeder'], ['description' => 'Default factory role'])->id,
+            'role_id' => Role::factory(),
             'full_name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'phone' => fake()->phoneNumber(),

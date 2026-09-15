@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class SalesOrder extends Model
 {
+    use HasFactory;
+
     protected $fillable = ['so_number', 'customer_id', 'sale_date', 'status', 'total_amount'];
 
     protected $casts = ['sale_date' => 'date'];

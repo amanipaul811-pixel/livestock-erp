@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Animal extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'tag_id', 'batch_id', 'species_id', 'breed', 'sex',
         'estimated_age_months', 'entry_date', 'entry_weight_kg',
@@ -58,7 +61,11 @@ class Animal extends Model
     // Latest recorded weight, falling back to entry weight if never weighed
     public function latestWeightKg(): float
     {
-        $latest = $this->weighIns()->latest('weigh_date')->first();
+        // weighIns() sorts ascending for chronological display elsewhere, so
+        // reorder() clears that before sorting descending here -- appending
+        // ->latest() on top of an existing orderBy on the same column is a
+        // no-op in most SQL engines and would silently return the oldest row.
+        $latest = $this->weighIns()->reorder('weigh_date', 'desc')->first();
 
         return $latest ? (float) $latest->weight_kg : (float) $this->entry_weight_kg;
     }
@@ -71,7 +78,10 @@ class Animal extends Model
     // Average Daily Gain since entry
     public function averageDailyGainKg(): float
     {
-        $days = max(1, $this->entry_date->diffInDays(now()));
+        // Cast to int: Carbon 3's diffInDays() returns a fractional day count
+        // (time-of-day included) rather than the truncated whole-day count
+        // this calculation assumes.
+        $days = max(1, (int) $this->entry_date->diffInDays(now()));
 
         return round($this->currentWeightGainKg() / $days, 2);
     }

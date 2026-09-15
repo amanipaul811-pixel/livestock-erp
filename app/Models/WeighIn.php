@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class WeighIn extends Model
 {
+    use HasFactory;
+
     protected $fillable = ['animal_id', 'weigh_date', 'weight_kg', 'recorded_by', 'notes'];
 
     protected $casts = ['weigh_date' => 'date'];

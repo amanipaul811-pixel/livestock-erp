@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Batch extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'batch_code', 'species_id', 'pen_id', 'start_date',
         'expected_end_date', 'actual_end_date', 'status', 'notes', 'created_by',
@@ -51,7 +54,11 @@ class Batch extends Model
 
     public function daysOnFeed(): int
     {
-        return $this->start_date->diffInDays(now());
+        // Cast explicitly: Carbon 3's diffInDays() returns a fractional day
+        // count, not the truncated whole-day count this relies on. The `:
+        // int` return type happens to coerce it, but do it explicitly so the
+        // truncation isn't hidden behind an implicit type-juggling rule.
+        return (int) $this->start_date->diffInDays(now());
     }
 
     public function totalFeedCost(): float
