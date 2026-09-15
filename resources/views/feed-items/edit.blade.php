@@ -33,6 +33,10 @@
             @endforeach
         </select>
     </div>
+    <div>
+        <label class="block text-sm font-medium mb-1">Reorder Level (kg)</label>
+        <input type="number" step="0.01" name="reorder_level" value="{{ old('reorder_level', $feedItem->reorder_level) }}" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800">
+    </div>
     <div class="flex gap-2">
         <button type="submit" class="bg-indigo-600 text-white text-sm px-4 py-2 rounded-md hover:bg-indigo-700">Save</button>
         <a href="{{ route('feed-items.index') }}" class="border border-gray-300 text-sm px-4 py-2 rounded-md hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">Cancel</a>

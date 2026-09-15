@@ -7,6 +7,7 @@ use App\Http\Requests\Api\StoreFeedLogRequest;
 use App\Models\Batch;
 use App\Models\FeedItem;
 use App\Models\FeedLog;
+use App\Models\FeedStockMovement;
 
 class FeedLogController extends Controller
 {
@@ -21,6 +22,15 @@ class FeedLogController extends Controller
         $validated['recorded_by'] = $request->user()->id ?? null;
 
         $feedLog = FeedLog::create($validated);
+
+        FeedStockMovement::create([
+            'feed_item_id' => $feedItem->id,
+            'type' => 'out',
+            'quantity_kg' => $validated['quantity_kg'],
+            'reason' => 'Feed log for batch '.$batch->batch_code,
+            'recorded_by' => $validated['recorded_by'],
+            'occurred_at' => $validated['feed_date'],
+        ]);
 
         return response()->json($feedLog, 201);
     }

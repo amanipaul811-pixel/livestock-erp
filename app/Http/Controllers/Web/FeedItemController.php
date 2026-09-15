@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Web\RestockFeedItemRequest;
 use App\Http\Requests\Web\StoreFeedItemRequest;
 use App\Models\FeedItem;
+use App\Models\FeedStockMovement;
 use App\Models\Warehouse;
 
 class FeedItemController extends Controller
@@ -15,6 +17,20 @@ class FeedItemController extends Controller
             'feedItems' => FeedItem::with('warehouse')->orderBy('name')->get(),
             'warehouses' => Warehouse::orderBy('name')->get(),
         ]);
+    }
+
+    public function restock(RestockFeedItemRequest $request, FeedItem $feedItem)
+    {
+        FeedStockMovement::create([
+            'feed_item_id' => $feedItem->id,
+            'type' => 'in',
+            'quantity_kg' => $request->validated('quantity_kg'),
+            'reason' => $request->validated('reason') ?? 'Restock',
+            'recorded_by' => $request->user()->id,
+            'occurred_at' => now(),
+        ]);
+
+        return redirect()->route('feed-items.index')->with('status', 'Feed item restocked.');
     }
 
     public function store(StoreFeedItemRequest $request)

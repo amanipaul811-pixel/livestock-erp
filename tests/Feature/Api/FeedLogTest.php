@@ -26,6 +26,11 @@ class FeedLogTest extends TestCase
         ]);
 
         $response->assertCreated()->assertJsonPath('total_cost', 5);
+        $this->assertDatabaseHas('feed_stock_movements', [
+            'feed_item_id' => $feedItem->id,
+            'type' => 'out',
+            'quantity_kg' => 10,
+        ]);
     }
 
     public function test_invalid_batch_id_on_feed_log_returns_404(): void

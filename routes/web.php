@@ -66,6 +66,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/feed-items/{feedItem}/edit', [FeedItemController::class, 'edit'])->name('feed-items.edit');
     Route::put('/feed-items/{feedItem}', [FeedItemController::class, 'update'])->name('feed-items.update');
     Route::delete('/feed-items/{feedItem}', [FeedItemController::class, 'destroy'])->name('feed-items.destroy');
+    Route::post('/feed-items/{feedItem}/restock', [FeedItemController::class, 'restock'])->name('feed-items.restock');
 
     Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
     Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
