@@ -30,6 +30,7 @@
     @auth
     @php
         $setupActive = request()->routeIs(['feed-items.*', 'customers.*', 'suppliers.*', 'warehouses.*', 'ration-formulas.*', 'users.*']);
+        $reportsActive = request()->routeIs('reports.*');
     @endphp
 
     <div x-cloak x-show="sidebarOpen" x-transition.opacity @click="sidebarOpen = false"
@@ -72,11 +73,30 @@
             @endif
 
             @if (auth()->user()->hasPermission('dashboard.view'))
-                <a href="{{ route('reports.index') }}"
-                   class="flex items-center gap-3 rounded-md px-3 py-2 mb-0.5 {{ request()->routeIs('reports.*') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17V9m4 8V5m4 12v-4M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                    Reports
-                </a>
+                <div x-data="{ open: {{ $reportsActive ? 'true' : 'false' }} }">
+                    <button @click="open = !open" class="flex w-full items-center justify-between rounded-md px-3 py-2 mb-0.5 {{ $reportsActive ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
+                        <span class="flex items-center gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17V9m4 8V5m4 12v-4M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                            Reports
+                        </span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 transition-transform shrink-0" :class="open ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.14l3.71-3.91a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+                    </button>
+                    <div x-show="open" x-cloak>
+                        @foreach ([
+                            ['reports.index', route('reports.index'), 'Profit & Loss'],
+                            ['reports.sales', route('reports.sales'), 'Sales'],
+                            ['reports.purchases', route('reports.purchases'), 'Purchases'],
+                            ['reports.stock', route('reports.stock'), 'Stock Movements'],
+                            ['reports.movements', route('reports.movements'), 'Animal Movements'],
+                            ['reports.health', route('reports.health'), 'Health'],
+                        ] as [$routePattern, $href, $label])
+                            <a href="{{ $href }}"
+                               class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs($routePattern) ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
+                                {{ $label }}
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
             @endif
 
             <div x-data="{ open: {{ $setupActive ? 'true' : 'false' }} }" class="mt-4">

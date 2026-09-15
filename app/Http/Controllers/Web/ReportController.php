@@ -40,16 +40,22 @@ class ReportController extends Controller
     {
         $from = $request->query('from') ?: now()->subMonths(12)->startOfMonth()->toDateString();
         $to = $request->query('to') ?: now()->toDateString();
+        // Date columns can carry a time component (either genuinely, like a
+        // timestamp column, or as a storage quirk of the 'date' cast) -- a
+        // plain "to" date string as the upper bound would wrongly exclude
+        // same-day records timestamped after midnight, so widen it to the
+        // end of that day for every range filter below.
+        $toBound = "{$to} 23:59:59";
 
         // Accrual P&L for the period: realized revenue/COGS for animals that
         // actually sold, a mortality loss for animals that died, and costs
         // for animals still on feed held out as WIP inventory rather than
         // counted as a loss (see Batch::accrualBreakdown()).
-        $batches = Batch::whereBetween('start_date', [$from, $to])->orderBy('start_date')->get();
+        $batches = Batch::whereBetween('start_date', [$from, $toBound])->orderBy('start_date')->get();
         $batchRows = $batches->map(fn (Batch $b) => array_merge(['batch' => $b], $b->accrualBreakdown()));
 
         $overheadExpenses = (float) Expense::whereNull('batch_id')
-            ->whereBetween('expense_date', [$from, $to])
+            ->whereBetween('expense_date', [$from, $toBound])
             ->sum('amount');
 
         $totals = [
@@ -84,7 +90,7 @@ class ReportController extends Controller
             fn (SalesOrder $so) => $so->sale_date,
         );
 
-        $expenseByCategory = Expense::whereBetween('expense_date', [$from, $to])
+        $expenseByCategory = Expense::whereBetween('expense_date', [$from, $toBound])
             ->selectRaw('category, sum(amount) as total')
             ->groupBy('category')
             ->orderByDesc('total')
@@ -93,14 +99,14 @@ class ReportController extends Controller
         $revenueBySpecies = SalesOrderItem::join('sales_orders', 'sales_orders.id', '=', 'sales_order_items.sales_order_id')
             ->join('animals', 'animals.id', '=', 'sales_order_items.animal_id')
             ->join('species', 'species.id', '=', 'animals.species_id')
-            ->whereBetween('sales_orders.sale_date', [$from, $to])
+            ->whereBetween('sales_orders.sale_date', [$from, $toBound])
             ->selectRaw('species.name as species, sum(sales_order_items.line_total) as total')
             ->groupBy('species.name')
             ->orderByDesc('total')
             ->pluck('total', 'species');
 
         $revenueByCustomer = SalesOrder::join('customers', 'customers.id', '=', 'sales_orders.customer_id')
-            ->whereBetween('sales_orders.sale_date', [$from, $to])
+            ->whereBetween('sales_orders.sale_date', [$from, $toBound])
             ->selectRaw('customers.name as customer, sum(sales_orders.total_amount) as total')
             ->groupBy('customers.name')
             ->orderByDesc('total')

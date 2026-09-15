@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Web\AnimalController;
 use App\Http\Controllers\Web\AnimalMovementController;
+use App\Http\Controllers\Web\AnimalMovementReportController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\BatchController;
 use App\Http\Controllers\Web\CustomerController;
@@ -10,13 +11,17 @@ use App\Http\Controllers\Web\ExpenseController;
 use App\Http\Controllers\Web\FeedItemController;
 use App\Http\Controllers\Web\FeedLogController;
 use App\Http\Controllers\Web\HealthRecordController;
+use App\Http\Controllers\Web\HealthReportController;
 use App\Http\Controllers\Web\NotificationController;
 use App\Http\Controllers\Web\PasswordResetController;
 use App\Http\Controllers\Web\PaymentController;
 use App\Http\Controllers\Web\PurchaseOrderController;
+use App\Http\Controllers\Web\PurchaseReportController;
 use App\Http\Controllers\Web\RationFormulaController;
 use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\Web\SalesOrderController;
+use App\Http\Controllers\Web\SalesReportController;
+use App\Http\Controllers\Web\StockReportController;
 use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\WarehouseController;
@@ -119,6 +124,26 @@ Route::middleware('auth')->group(function () {
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/export/pdf', [ReportController::class, 'exportPdf'])->name('reports.export-pdf');
         Route::get('/reports/export/excel', [ReportController::class, 'exportExcel'])->name('reports.export-excel');
+
+        Route::get('/reports/sales', [SalesReportController::class, 'index'])->name('reports.sales');
+        Route::get('/reports/sales/export/pdf', [SalesReportController::class, 'exportPdf'])->name('reports.sales.export-pdf');
+        Route::get('/reports/sales/export/excel', [SalesReportController::class, 'exportExcel'])->name('reports.sales.export-excel');
+
+        Route::get('/reports/purchases', [PurchaseReportController::class, 'index'])->name('reports.purchases');
+        Route::get('/reports/purchases/export/pdf', [PurchaseReportController::class, 'exportPdf'])->name('reports.purchases.export-pdf');
+        Route::get('/reports/purchases/export/excel', [PurchaseReportController::class, 'exportExcel'])->name('reports.purchases.export-excel');
+
+        Route::get('/reports/stock', [StockReportController::class, 'index'])->name('reports.stock');
+        Route::get('/reports/stock/export/pdf', [StockReportController::class, 'exportPdf'])->name('reports.stock.export-pdf');
+        Route::get('/reports/stock/export/excel', [StockReportController::class, 'exportExcel'])->name('reports.stock.export-excel');
+
+        Route::get('/reports/movements', [AnimalMovementReportController::class, 'index'])->name('reports.movements');
+        Route::get('/reports/movements/export/pdf', [AnimalMovementReportController::class, 'exportPdf'])->name('reports.movements.export-pdf');
+        Route::get('/reports/movements/export/excel', [AnimalMovementReportController::class, 'exportExcel'])->name('reports.movements.export-excel');
+
+        Route::get('/reports/health', [HealthReportController::class, 'index'])->name('reports.health');
+        Route::get('/reports/health/export/pdf', [HealthReportController::class, 'exportPdf'])->name('reports.health.export-pdf');
+        Route::get('/reports/health/export/excel', [HealthReportController::class, 'exportExcel'])->name('reports.health.export-excel');
     });
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index')->middleware('permission:user.manage');
