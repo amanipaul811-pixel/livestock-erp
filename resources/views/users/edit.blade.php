@@ -23,6 +23,7 @@
     <div>
         <label class="block text-sm font-medium mb-1">New Password</label>
         <input type="password" name="password" minlength="8" placeholder="Leave blank to keep current password" class="w-full border rounded px-3 py-2 text-sm">
+        <p class="text-xs text-gray-500 mt-1">If set: at least 8 characters, with upper and lower case letters and a number.</p>
     </div>
     <div>
         <label class="block text-sm font-medium mb-1">Role</label>

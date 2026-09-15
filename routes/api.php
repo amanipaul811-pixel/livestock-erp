@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 // backed by $user->hasPermission('code') (see App\Http\Middleware\EnsurePermission).
 // Read routes stay open to any authenticated user.
 
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
 
 Route::middleware('auth:sanctum')->group(function () {
 

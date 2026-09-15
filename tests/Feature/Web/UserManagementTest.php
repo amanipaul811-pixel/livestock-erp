@@ -21,7 +21,7 @@ class UserManagementTest extends TestCase
         $response = $this->actingAs($admin)->post('/users', [
             'full_name' => 'New Feeder',
             'email' => 'new-feeder@example.com',
-            'password' => 'password123',
+            'password' => 'Password123',
             'role_id' => $role->id,
             'is_active' => '1',
         ]);
@@ -55,12 +55,12 @@ class UserManagementTest extends TestCase
         $this->actingAs($admin)->put("/users/{$user->id}", [
             'full_name' => $user->full_name,
             'email' => $user->email,
-            'password' => 'brand-new-password',
+            'password' => 'BrandNewPassword1',
             'role_id' => $user->role_id,
             'is_active' => '1',
         ]);
 
-        $this->assertTrue(Hash::check('brand-new-password', $user->fresh()->password));
+        $this->assertTrue(Hash::check('BrandNewPassword1', $user->fresh()->password));
     }
 
     public function test_a_feeder_cannot_reach_user_management(): void

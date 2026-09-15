@@ -21,5 +21,6 @@
             Log in
         </button>
     </form>
+    <a href="{{ route('password.request') }}" class="block text-center text-sm text-gray-500 hover:underline mt-4">Forgot password?</a>
 </div>
 @endsection

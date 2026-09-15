@@ -22,6 +22,7 @@
     <div>
         <label class="block text-sm font-medium mb-1">Password</label>
         <input type="password" name="password" required minlength="8" class="w-full border rounded px-3 py-2 text-sm">
+        <p class="text-xs text-gray-500 mt-1">At least 8 characters, with upper and lower case letters and a number.</p>
     </div>
     <div>
         <label class="block text-sm font-medium mb-1">Role</label>

@@ -24,8 +24,14 @@ unit for profitability reporting.
   one per write endpoint
 - `app/Http/Middleware/EnsurePermission.php` — RBAC gate (`permission:<code>`
   middleware) backed by `User::hasPermission()`
-- `tests/` — 85 tests (feature tests per resource + unit tests for every KPI
+- `tests/` — 91 tests (feature tests per resource + unit tests for every KPI
   calculation); run with `composer test` or `php artisan test`
+- Login is rate-limited (5 attempts/min, keyed by email+IP so one account
+  under attack doesn't lock out everyone on the same office connection);
+  Sanctum tokens expire after 30 days (`SANCTUM_TOKEN_EXPIRATION`); a
+  forgot-password flow exists for the web UI (`/forgot-password`) — the
+  reset email goes out via whatever `MAIL_MAILER` is configured (`log` in
+  dev, writes to `storage/logs/laravel.log` instead of actually sending)
 
 ## Workflow coverage
 
@@ -109,6 +115,7 @@ authenticated user can record one.
 ## Not included (known gaps)
 
 - No sale/purchase-order approval workflow (by design — see RBAC above)
-- Password reset flow (no forgot-password UI; an admin can reset a user's
-  password from `/users`)
-- Rate limiting on login, Sanctum token expiration policy
+- No production `.env` / deployment setup yet (Render config, real mail
+  credentials, `config:cache`/`route:cache`/`view:cache` on deploy — verified
+  they all work cleanly against this codebase, just not wired into a deploy
+  pipeline yet)
