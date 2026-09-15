@@ -4,7 +4,10 @@
 
 @section('content')
 <div class="flex items-center justify-between mb-1">
-    <h1 class="text-2xl font-semibold">{{ $formula->name }}</h1>
+    <div class="flex items-center gap-3">
+        @include('partials.back-button', ['fallback' => route('ration-formulas.index')])
+        <h1 class="text-2xl font-semibold">{{ $formula->name }}</h1>
+    </div>
     @if (auth()->user()->hasPermission('rationformula.create'))
     <div class="flex gap-2">
         <a href="{{ route('ration-formulas.edit', $formula) }}" class="border border-gray-300 text-sm px-4 py-2 rounded-md hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">Edit</a>

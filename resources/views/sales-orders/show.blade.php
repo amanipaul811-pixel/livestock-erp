@@ -3,10 +3,15 @@
 @section('title', $order->so_number)
 
 @section('content')
-<h1 class="text-2xl font-semibold mb-1">{{ $order->so_number }}</h1>
-<p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
-    Customer: {{ $order->customer->name }} &middot; Sale Date: {{ $order->sale_date->format('Y-m-d') }} &middot; Status: {{ $order->status }}
-</p>
+<div class="flex items-start gap-3 mb-6">
+    @include('partials.back-button')
+    <div>
+        <h1 class="text-2xl font-semibold mb-1">{{ $order->so_number }}</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+            Customer: {{ $order->customer->name }} &middot; Sale Date: {{ $order->sale_date->format('Y-m-d') }} &middot; Status: {{ $order->status }}
+        </p>
+    </div>
+</div>
 
 <div class="grid grid-cols-3 gap-4 mb-8">
     <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4">

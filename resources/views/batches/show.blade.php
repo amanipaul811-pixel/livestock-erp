@@ -4,9 +4,12 @@
 
 @section('content')
 <div class="flex items-center justify-between mb-6">
-    <div>
-        <h1 class="text-2xl font-semibold">{{ $batch->batch_code }}</h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400">{{ $batch->species->name }} &middot; Pen: {{ $batch->pen->name ?? 'Unassigned' }} &middot; Status: {{ $batch->status }}</p>
+    <div class="flex items-start gap-3">
+        @include('partials.back-button', ['fallback' => route('batches.index')])
+        <div>
+            <h1 class="text-2xl font-semibold">{{ $batch->batch_code }}</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $batch->species->name }} &middot; Pen: {{ $batch->pen->name ?? 'Unassigned' }} &middot; Status: {{ $batch->status }}</p>
+        </div>
     </div>
     <div class="flex gap-2">
         @if (auth()->user()->hasPermission('batch.update'))

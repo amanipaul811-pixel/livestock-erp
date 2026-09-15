@@ -4,14 +4,17 @@
 
 @section('content')
 <div class="flex items-center justify-between mb-6">
-    <div>
-        <h1 class="text-2xl font-semibold">{{ $animal->tag_id }}</h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-            {{ $animal->species->name }} &middot; {{ $animal->sex }} &middot;
-            Batch: <a href="{{ route('batches.show', $animal->batch) }}" class="underline">{{ $animal->batch->batch_code }}</a>
-            &middot; Pen: {{ $animal->currentPen->name ?? 'Unassigned' }}
-            &middot; Status: {{ $animal->status }}
-        </p>
+    <div class="flex items-start gap-3">
+        @include('partials.back-button', ['fallback' => route('batches.show', $animal->batch)])
+        <div>
+            <h1 class="text-2xl font-semibold">{{ $animal->tag_id }}</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                {{ $animal->species->name }} &middot; {{ $animal->sex }} &middot;
+                Batch: <a href="{{ route('batches.show', $animal->batch) }}" class="underline">{{ $animal->batch->batch_code }}</a>
+                &middot; Pen: {{ $animal->currentPen->name ?? 'Unassigned' }}
+                &middot; Status: {{ $animal->status }}
+            </p>
+        </div>
     </div>
     <div class="flex items-center gap-3">
         <a href="{{ route('animals.tag', $animal) }}" target="_blank" class="flex items-center gap-2 border border-gray-300 text-sm px-3 py-2 rounded-md hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">

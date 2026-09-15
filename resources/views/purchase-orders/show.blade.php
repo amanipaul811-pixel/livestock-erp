@@ -4,15 +4,18 @@
 
 @section('content')
 <div class="flex items-center justify-between mb-6">
-    <div>
-        <h1 class="text-2xl font-semibold">{{ $order->po_number }}</h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-            Supplier: {{ $order->supplier->name }} &middot; Type: {{ $order->order_type }} &middot;
-            Date: {{ $order->order_date->format('Y-m-d') }} &middot; Status: {{ $order->status }}
-            @if ($order->order_type === 'feed' && $order->feedItem)
-                &middot; {{ $order->quantity_kg }} kg of {{ $order->feedItem->name }}
-            @endif
-        </p>
+    <div class="flex items-start gap-3">
+        @include('partials.back-button', ['fallback' => route('purchase-orders.index')])
+        <div>
+            <h1 class="text-2xl font-semibold">{{ $order->po_number }}</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                Supplier: {{ $order->supplier->name }} &middot; Type: {{ $order->order_type }} &middot;
+                Date: {{ $order->order_date->format('Y-m-d') }} &middot; Status: {{ $order->status }}
+                @if ($order->order_type === 'feed' && $order->feedItem)
+                    &middot; {{ $order->quantity_kg }} kg of {{ $order->feedItem->name }}
+                @endif
+            </p>
+        </div>
     </div>
     @if ($order->status === 'pending' && auth()->user()->hasPermission('purchaseorder.update'))
         <div class="flex gap-2">
