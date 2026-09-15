@@ -15,6 +15,7 @@ use App\Http\Controllers\Web\PasswordResetController;
 use App\Http\Controllers\Web\PaymentController;
 use App\Http\Controllers\Web\PurchaseOrderController;
 use App\Http\Controllers\Web\RationFormulaController;
+use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\Web\SalesOrderController;
 use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\UserController;
@@ -109,6 +110,12 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
     Route::get('/notifications/{notification}/open', [NotificationController::class, 'open'])->name('notifications.open');
+
+    Route::middleware('permission:dashboard.view')->group(function () {
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/export/pdf', [ReportController::class, 'exportPdf'])->name('reports.export-pdf');
+        Route::get('/reports/export/excel', [ReportController::class, 'exportExcel'])->name('reports.export-excel');
+    });
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index')->middleware('permission:user.manage');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create')->middleware('permission:user.manage');

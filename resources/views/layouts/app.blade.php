@@ -63,6 +63,14 @@
                 </a>
             @endif
 
+            @if (auth()->user()->hasPermission('dashboard.view'))
+                <a href="{{ route('reports.index') }}"
+                   class="flex items-center gap-3 rounded-md px-3 py-2 mb-0.5 {{ request()->routeIs('reports.*') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17V9m4 8V5m4 12v-4M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    Reports
+                </a>
+            @endif
+
             <div x-data="{ open: {{ $setupActive ? 'true' : 'false' }} }" class="mt-4">
                 <button @click="open = !open" class="flex w-full items-center justify-between rounded-md px-3 py-2 text-xs font-semibold uppercase tracking-wide text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300">
                     Setup
