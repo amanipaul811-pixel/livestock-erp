@@ -38,6 +38,27 @@ class PurchaseOrderTest extends TestCase
         $response->assertOk()->assertJsonPath('status', 'received');
     }
 
+    public function test_a_received_order_cannot_be_changed_back_to_pending(): void
+    {
+        Sanctum::actingAs($this->userWithRole('Farm Manager'));
+        $order = PurchaseOrder::factory()->create(['status' => 'received']);
+
+        $response = $this->patchJson("/api/purchase-orders/{$order->id}", ['status' => 'pending']);
+
+        $response->assertStatus(422)->assertJsonValidationErrors('status');
+        $this->assertSame('received', $order->fresh()->status);
+    }
+
+    public function test_a_cancelled_order_cannot_be_marked_received(): void
+    {
+        Sanctum::actingAs($this->userWithRole('Farm Manager'));
+        $order = PurchaseOrder::factory()->create(['status' => 'cancelled']);
+
+        $response = $this->patchJson("/api/purchase-orders/{$order->id}", ['status' => 'received']);
+
+        $response->assertStatus(422)->assertJsonValidationErrors('status');
+    }
+
     public function test_vet_cannot_create_a_purchase_order(): void
     {
         Sanctum::actingAs($this->userWithRole('Vet'));

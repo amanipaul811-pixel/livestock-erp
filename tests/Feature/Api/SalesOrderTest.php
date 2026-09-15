@@ -53,6 +53,41 @@ class SalesOrderTest extends TestCase
         $this->assertDatabaseHas('batches', ['id' => $batch->id, 'status' => 'partially_sold']);
     }
 
+    public function test_an_already_sold_animal_cannot_be_sold_again(): void
+    {
+        Sanctum::actingAs($this->userWithRole('Sales'));
+        $animal = Animal::factory()->create(['status' => 'sold']);
+        $customer = Customer::factory()->create();
+
+        $response = $this->postJson('/api/sales-orders', [
+            'customer_id' => $customer->id,
+            'sale_date' => now()->toDateString(),
+            'items' => [
+                ['animal_id' => $animal->id, 'sale_weight_kg' => 400, 'price_per_kg' => 3.5],
+            ],
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors('items.0.animal_id');
+    }
+
+    public function test_the_same_animal_cannot_appear_twice_in_one_sales_order(): void
+    {
+        Sanctum::actingAs($this->userWithRole('Sales'));
+        $animal = Animal::factory()->create(['status' => 'on_feed']);
+        $customer = Customer::factory()->create();
+
+        $response = $this->postJson('/api/sales-orders', [
+            'customer_id' => $customer->id,
+            'sale_date' => now()->toDateString(),
+            'items' => [
+                ['animal_id' => $animal->id, 'sale_weight_kg' => 400, 'price_per_kg' => 3.5],
+                ['animal_id' => $animal->id, 'sale_weight_kg' => 400, 'price_per_kg' => 3.5],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+    }
+
     public function test_feeder_cannot_create_a_sales_order(): void
     {
         Sanctum::actingAs($this->userWithRole('Feeder'));
