@@ -3,7 +3,10 @@
 @section('title', 'Customers')
 
 @section('content')
-<h1 class="text-2xl font-semibold mb-6">Customers</h1>
+<div class="flex items-center gap-3 mb-6">
+    @include('partials.back-button')
+    <h1 class="text-2xl font-semibold">Customers</h1>
+</div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <div class="lg:col-span-2 bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">

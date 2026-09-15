@@ -4,7 +4,10 @@
 
 @section('content')
 <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
-    <h1 class="text-2xl font-semibold">Purchases Report</h1>
+    <div class="flex items-center gap-3">
+        @include('partials.back-button')
+        <h1 class="text-2xl font-semibold">Purchases Report</h1>
+    </div>
     <div class="flex gap-2">
         <a href="{{ route('reports.purchases.export-pdf', request()->query()) }}" class="border border-gray-300 text-sm px-3 py-2 rounded-md hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">Export PDF</a>
         <a href="{{ route('reports.purchases.export-excel', request()->query()) }}" class="border border-gray-300 text-sm px-3 py-2 rounded-md hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">Export Excel</a>

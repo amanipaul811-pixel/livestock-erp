@@ -3,7 +3,10 @@
 @section('title', 'Edit '.$formula->name)
 
 @section('content')
-<h1 class="text-2xl font-semibold mb-6">Edit {{ $formula->name }}</h1>
+<div class="flex items-center gap-3 mb-6">
+    @include('partials.back-button', ['fallback' => route('ration-formulas.show', $formula)])
+    <h1 class="text-2xl font-semibold">Edit {{ $formula->name }}</h1>
+</div>
 
 <form method="POST" action="{{ route('ration-formulas.update', $formula) }}"
       x-data="{ rows: {{ $formula->items->map(fn ($i) => ['feed_item_id' => (string) $i->feed_item_id, 'quantity_kg_per_head' => $i->quantity_kg_per_head])->toJson() }} }"

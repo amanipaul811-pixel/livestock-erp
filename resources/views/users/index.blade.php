@@ -4,7 +4,10 @@
 
 @section('content')
 <div class="flex items-center justify-between mb-6">
-    <h1 class="text-2xl font-semibold">Users</h1>
+    <div class="flex items-center gap-3">
+        @include('partials.back-button')
+        <h1 class="text-2xl font-semibold">Users</h1>
+    </div>
     <a href="{{ route('users.create') }}" class="bg-indigo-600 text-white text-sm px-4 py-2 rounded-md hover:bg-indigo-700">+ New User</a>
 </div>
 

@@ -3,7 +3,10 @@
 @section('title', 'Scan')
 
 @section('content')
-<h1 class="text-2xl font-semibold mb-6">Scan Animal Tag</h1>
+<div class="flex items-center gap-3 mb-6">
+    @include('partials.back-button')
+    <h1 class="text-2xl font-semibold">Scan Animal Tag</h1>
+</div>
 
 <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4 max-w-md">
     <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">Point the camera at an animal's QR tag to open its record.</p>

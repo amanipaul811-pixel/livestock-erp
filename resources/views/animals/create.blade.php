@@ -3,8 +3,13 @@
 @section('title', 'Intake Animal')
 
 @section('content')
-<h1 class="text-2xl font-semibold mb-1">Intake Animal</h1>
-<p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Into batch {{ $batch->batch_code }} ({{ $batch->species->name }})</p>
+<div class="flex items-start gap-3 mb-6">
+    @include('partials.back-button', ['fallback' => route('batches.show', $batch)])
+    <div>
+        <h1 class="text-2xl font-semibold mb-1">Intake Animal</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Into batch {{ $batch->batch_code }} ({{ $batch->species->name }})</p>
+    </div>
+</div>
 
 <form method="POST" action="{{ route('animals.store', $batch) }}" class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6 max-w-lg space-y-4">
     @csrf

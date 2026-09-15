@@ -3,7 +3,10 @@
 @section('title', 'New Batch')
 
 @section('content')
-<h1 class="text-2xl font-semibold mb-6">New Batch (Buy)</h1>
+<div class="flex items-center gap-3 mb-6">
+    @include('partials.back-button', ['fallback' => route('batches.index')])
+    <h1 class="text-2xl font-semibold">New Batch (Buy)</h1>
+</div>
 
 <form method="POST" action="{{ route('batches.store') }}" class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6 max-w-lg space-y-4">
     @csrf

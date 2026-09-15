@@ -3,7 +3,10 @@
 @section('title', 'Edit Customer')
 
 @section('content')
-<h1 class="text-2xl font-semibold mb-6">Edit Customer</h1>
+<div class="flex items-center gap-3 mb-6">
+    @include('partials.back-button', ['fallback' => route('customers.index')])
+    <h1 class="text-2xl font-semibold">Edit Customer</h1>
+</div>
 
 <form method="POST" action="{{ route('customers.update', $customer) }}" class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6 max-w-md space-y-4">
     @csrf

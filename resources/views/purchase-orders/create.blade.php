@@ -3,7 +3,10 @@
 @section('title', 'New Purchase Order')
 
 @section('content')
-<h1 class="text-2xl font-semibold mb-6">New Purchase Order</h1>
+<div class="flex items-center gap-3 mb-6">
+    @include('partials.back-button', ['fallback' => route('purchase-orders.index')])
+    <h1 class="text-2xl font-semibold">New Purchase Order</h1>
+</div>
 
 @if ($suppliers->isEmpty())
     <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6 text-sm text-gray-500 dark:text-gray-400">

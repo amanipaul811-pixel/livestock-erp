@@ -3,8 +3,13 @@
 @section('title', 'Edit '.$batch->batch_code)
 
 @section('content')
-<h1 class="text-2xl font-semibold mb-1">Edit {{ $batch->batch_code }}</h1>
-<p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Species and start date are fixed once a batch is created.</p>
+<div class="flex items-start gap-3 mb-6">
+    @include('partials.back-button', ['fallback' => route('batches.show', $batch)])
+    <div>
+        <h1 class="text-2xl font-semibold mb-1">Edit {{ $batch->batch_code }}</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Species and start date are fixed once a batch is created.</p>
+    </div>
+</div>
 
 <form method="POST" action="{{ route('batches.update', $batch) }}" class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6 max-w-lg space-y-4">
     @csrf
