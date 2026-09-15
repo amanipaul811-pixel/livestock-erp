@@ -112,10 +112,17 @@ approval step exists in this workflow — sales settle immediately on
 creation). Payments (sales or purchase order) aren't permission-gated — any
 authenticated user can record one.
 
+## Deployment
+
+Render + managed PostgreSQL, via Docker (`Dockerfile`, `render.yaml`) — see
+[DEPLOYMENT.md](DEPLOYMENT.md) for the full walkthrough. Not yet verified
+against a live Render account (no access from this environment); the config
+follows standard Laravel/Docker/Render patterns and was checked as far as
+possible without one — `composer test` green, `config:cache`/`route:cache`/
+`view:cache` all succeed locally, the shell entrypoint passes `bash -n`. The
+first real deploy is where anything still off would surface, in Render's
+build log.
+
 ## Not included (known gaps)
 
 - No sale/purchase-order approval workflow (by design — see RBAC above)
-- No production `.env` / deployment setup yet (Render config, real mail
-  credentials, `config:cache`/`route:cache`/`view:cache` on deploy — verified
-  they all work cleanly against this codebase, just not wired into a deploy
-  pipeline yet)

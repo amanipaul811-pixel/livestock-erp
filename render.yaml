@@ -1,0 +1,93 @@
+# Render Blueprint -- https://render.com/docs/blueprint-spec
+#
+# Deploy: push this repo to GitHub, then in the Render dashboard choose
+# "New > Blueprint" and point it at the repo. Render reads this file and
+# provisions the web service + database together, wiring DB_* automatically
+# via `fromDatabase` below.
+#
+# The database plan is deliberately NOT "free" -- Render's free Postgres tier
+# has no automated backups and expires after 90 days, which fails the
+# explicit "managed Postgres + automated backups" requirement this was built
+# for. Bump `starter` to a larger plan if the dataset outgrows it; backups
+# stay on for every paid tier.
+#
+# Secrets (APP_KEY, MAIL_*) are marked `sync: false` so Render prompts for
+# them in the dashboard instead of expecting a value here -- never commit
+# those.
+
+services:
+  - type: web
+    name: livestock-erp
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    healthCheckPath: /up
+    envVars:
+      - key: APP_NAME
+        value: "Livestock ERP"
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        sync: false # generate once locally: php artisan key:generate --show
+      - key: APP_URL
+        sync: false # e.g. https://livestock-erp.onrender.com, or your custom domain once attached
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_LEVEL
+        value: error
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: livestock-erp-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: livestock-erp-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: livestock-erp-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: livestock-erp-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: livestock-erp-db
+          property: password
+      # File-based session/cache are fine for a single instance (the default
+      # here); if this ever scales to multiple web instances, switch both to
+      # `database` so state is shared instead of per-container.
+      - key: SESSION_DRIVER
+        value: file
+      - key: CACHE_STORE
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: SANCTUM_TOKEN_EXPIRATION
+        value: "43200" # 30 days, in minutes
+      # Real SMTP credentials -- without these, password-reset emails have
+      # nowhere to go. Set all four in the Render dashboard.
+      - key: MAIL_MAILER
+        value: smtp
+      - key: MAIL_HOST
+        sync: false
+      - key: MAIL_PORT
+        sync: false
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_FROM_ADDRESS
+        sync: false
+      - key: MAIL_FROM_NAME
+        value: "Livestock ERP"
+
+databases:
+  - name: livestock-erp-db
+    databaseName: livestock_erp
+    plan: starter
