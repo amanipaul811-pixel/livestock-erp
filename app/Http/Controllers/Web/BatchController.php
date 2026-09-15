@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\StoreBatchRequest;
+use App\Http\Requests\Web\UpdateBatchRequest;
 use App\Models\Batch;
 use App\Models\FeedItem;
 use App\Models\Pen;
@@ -56,5 +57,20 @@ class BatchController extends Controller
                 'net_profit' => $batch->netProfit(),
             ],
         ]);
+    }
+
+    public function edit(Batch $batch)
+    {
+        return view('batches.edit', [
+            'batch' => $batch,
+            'pens' => Pen::where('is_active', true)->orderBy('name')->get(),
+        ]);
+    }
+
+    public function update(UpdateBatchRequest $request, Batch $batch)
+    {
+        $batch->update($request->validated());
+
+        return redirect()->route('batches.show', $batch)->with('status', 'Batch updated.');
     }
 }

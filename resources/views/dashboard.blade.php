@@ -51,8 +51,12 @@
 </div>
 
 <div class="mt-8 flex gap-3">
-    <a href="{{ route('batches.create') }}" class="bg-gray-900 text-white text-sm px-4 py-2 rounded hover:bg-gray-700">+ New Batch</a>
+    @if (auth()->user()->hasPermission('batch.create'))
+        <a href="{{ route('batches.create') }}" class="bg-gray-900 text-white text-sm px-4 py-2 rounded hover:bg-gray-700">+ New Batch</a>
+    @endif
     <a href="{{ route('batches.index') }}" class="border text-sm px-4 py-2 rounded hover:bg-gray-100">View Batches</a>
-    <a href="{{ route('sales-orders.create') }}" class="border text-sm px-4 py-2 rounded hover:bg-gray-100">Record a Sale</a>
+    @if (auth()->user()->hasPermission('salesorder.create'))
+        <a href="{{ route('sales-orders.create') }}" class="border text-sm px-4 py-2 rounded hover:bg-gray-100">Record a Sale</a>
+    @endif
 </div>
 @endsection

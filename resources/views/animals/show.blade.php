@@ -13,7 +13,7 @@
             &middot; Status: {{ $animal->status }}
         </p>
     </div>
-    @if ($animal->status === 'on_feed')
+    @if ($animal->status === 'on_feed' && auth()->user()->hasPermission('salesorder.create'))
         <a href="{{ route('sales-orders.create') }}" class="bg-gray-900 text-white text-sm px-4 py-2 rounded hover:bg-gray-700">Sell</a>
     @endif
 </div>
@@ -52,7 +52,7 @@
                 @endforelse
             </tbody>
         </table>
-        @if ($animal->status === 'on_feed')
+        @if ($animal->status === 'on_feed' && auth()->user()->hasPermission('weighin.create'))
         <form method="POST" action="{{ route('weigh-ins.store', $animal) }}" class="border-t pt-4 grid grid-cols-2 gap-2">
             @csrf
             <input type="date" name="weigh_date" value="{{ now()->format('Y-m-d') }}" required class="border rounded px-2 py-1.5 text-sm">
@@ -74,7 +74,7 @@
                 @endforelse
             </tbody>
         </table>
-        @if ($animal->status !== 'sold')
+        @if ($animal->status !== 'sold' && auth()->user()->hasPermission('healthrecord.create'))
         <form method="POST" action="{{ route('health-records.store', $animal) }}" x-data="{ type: 'vaccination' }" class="border-t pt-4 grid grid-cols-2 gap-2">
             @csrf
             <select name="record_type" x-model="type" required class="border rounded px-2 py-1.5 text-sm col-span-2">
@@ -114,7 +114,7 @@
         </tbody>
     </table>
 
-    @if ($animal->status === 'on_feed')
+    @if ($animal->status === 'on_feed' && auth()->user()->hasPermission('animalmovement.create'))
         <form method="POST" action="{{ route('movements.store', $animal) }}" class="border-t pt-4 grid grid-cols-2 gap-2">
             @csrf
             <select name="to_pen_id" required class="border rounded px-2 py-1.5 text-sm">

@@ -23,4 +23,30 @@ class FeedItemController extends Controller
 
         return redirect()->route('feed-items.index')->with('status', 'Feed item added.');
     }
+
+    public function edit(FeedItem $feedItem)
+    {
+        return view('feed-items.edit', [
+            'feedItem' => $feedItem,
+            'warehouses' => Warehouse::orderBy('name')->get(),
+        ]);
+    }
+
+    public function update(StoreFeedItemRequest $request, FeedItem $feedItem)
+    {
+        $feedItem->update($request->validated());
+
+        return redirect()->route('feed-items.index')->with('status', 'Feed item updated.');
+    }
+
+    public function destroy(FeedItem $feedItem)
+    {
+        if ($feedItem->feedLogs()->exists() || $feedItem->rationFormulaItems()->exists()) {
+            return back()->withErrors(['feed_item' => 'Cannot delete a feed item that has feed logs or ration formulas using it.']);
+        }
+
+        $feedItem->delete();
+
+        return redirect()->route('feed-items.index')->with('status', 'Feed item deleted.');
+    }
 }

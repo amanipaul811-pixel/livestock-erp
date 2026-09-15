@@ -8,7 +8,14 @@
         <h1 class="text-2xl font-semibold">{{ $batch->batch_code }}</h1>
         <p class="text-sm text-gray-500">{{ $batch->species->name }} &middot; Pen: {{ $batch->pen->name ?? 'Unassigned' }} &middot; Status: {{ $batch->status }}</p>
     </div>
-    <a href="{{ route('animals.create', $batch) }}" class="bg-gray-900 text-white text-sm px-4 py-2 rounded hover:bg-gray-700">+ Intake Animal</a>
+    <div class="flex gap-2">
+        @if (auth()->user()->hasPermission('batch.update'))
+            <a href="{{ route('batches.edit', $batch) }}" class="border text-sm px-4 py-2 rounded hover:bg-gray-100">Edit</a>
+        @endif
+        @if (auth()->user()->hasPermission('animal.create'))
+            <a href="{{ route('animals.create', $batch) }}" class="bg-gray-900 text-white text-sm px-4 py-2 rounded hover:bg-gray-700">+ Intake Animal</a>
+        @endif
+    </div>
 </div>
 
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -85,20 +92,22 @@
             </tbody>
         </table>
 
-        <form method="POST" action="{{ route('feed-logs.store', $batch) }}" class="border-t pt-4 grid grid-cols-2 gap-2">
-            @csrf
-            <select name="feed_item_id" required class="border rounded px-2 py-1.5 text-sm col-span-2">
-                <option value="">Feed item</option>
-                @foreach ($feedItems as $item)
-                    <option value="{{ $item->id }}">{{ $item->name }} ({{ $item->unit }} @ {{ $item->cost_per_unit }})</option>
-                @endforeach
-            </select>
-            <input type="date" name="feed_date" value="{{ now()->format('Y-m-d') }}" required class="border rounded px-2 py-1.5 text-sm">
-            <input type="number" step="0.01" name="quantity_kg" placeholder="Qty (kg)" required class="border rounded px-2 py-1.5 text-sm">
-            <button type="submit" class="col-span-2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded hover:bg-gray-700">Log Feed</button>
-        </form>
-        @if ($feedItems->isEmpty())
-            <p class="text-xs text-gray-500 mt-2">No feed items yet — <a href="{{ route('feed-items.index') }}" class="underline">add one</a> first.</p>
+        @if (auth()->user()->hasPermission('feedlog.create'))
+            <form method="POST" action="{{ route('feed-logs.store', $batch) }}" class="border-t pt-4 grid grid-cols-2 gap-2">
+                @csrf
+                <select name="feed_item_id" required class="border rounded px-2 py-1.5 text-sm col-span-2">
+                    <option value="">Feed item</option>
+                    @foreach ($feedItems as $item)
+                        <option value="{{ $item->id }}">{{ $item->name }} ({{ $item->unit }} @ {{ $item->cost_per_unit }})</option>
+                    @endforeach
+                </select>
+                <input type="date" name="feed_date" value="{{ now()->format('Y-m-d') }}" required class="border rounded px-2 py-1.5 text-sm">
+                <input type="number" step="0.01" name="quantity_kg" placeholder="Qty (kg)" required class="border rounded px-2 py-1.5 text-sm">
+                <button type="submit" class="col-span-2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded hover:bg-gray-700">Log Feed</button>
+            </form>
+            @if ($feedItems->isEmpty())
+                <p class="text-xs text-gray-500 mt-2">No feed items yet — <a href="{{ route('feed-items.index') }}" class="underline">add one</a> first.</p>
+            @endif
         @endif
     </div>
 </div>
@@ -123,19 +132,21 @@
         </tbody>
     </table>
 
-    <form method="POST" action="{{ route('expenses.store', $batch) }}" class="border-t pt-4 grid grid-cols-2 gap-2">
-        @csrf
-        <select name="category" required class="border rounded px-2 py-1.5 text-sm">
-            <option value="labor">Labor</option>
-            <option value="utilities">Utilities</option>
-            <option value="transport">Transport</option>
-            <option value="rent">Rent</option>
-            <option value="other">Other</option>
-        </select>
-        <input type="date" name="expense_date" value="{{ now()->format('Y-m-d') }}" required class="border rounded px-2 py-1.5 text-sm">
-        <input type="number" step="0.01" name="amount" placeholder="Amount" required class="border rounded px-2 py-1.5 text-sm">
-        <input type="text" name="description" placeholder="Description" class="border rounded px-2 py-1.5 text-sm">
-        <button type="submit" class="col-span-2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded hover:bg-gray-700">Add Expense</button>
-    </form>
+    @if (auth()->user()->hasPermission('expense.create'))
+        <form method="POST" action="{{ route('expenses.store', $batch) }}" class="border-t pt-4 grid grid-cols-2 gap-2">
+            @csrf
+            <select name="category" required class="border rounded px-2 py-1.5 text-sm">
+                <option value="labor">Labor</option>
+                <option value="utilities">Utilities</option>
+                <option value="transport">Transport</option>
+                <option value="rent">Rent</option>
+                <option value="other">Other</option>
+            </select>
+            <input type="date" name="expense_date" value="{{ now()->format('Y-m-d') }}" required class="border rounded px-2 py-1.5 text-sm">
+            <input type="number" step="0.01" name="amount" placeholder="Amount" required class="border rounded px-2 py-1.5 text-sm">
+            <input type="text" name="description" placeholder="Description" class="border rounded px-2 py-1.5 text-sm">
+            <button type="submit" class="col-span-2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded hover:bg-gray-700">Add Expense</button>
+        </form>
+    @endif
 </div>
 @endsection

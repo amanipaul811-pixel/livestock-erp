@@ -11,13 +11,21 @@
             Date: {{ $order->order_date->format('Y-m-d') }} &middot; Status: {{ $order->status }}
         </p>
     </div>
-    @if ($order->status === 'pending')
-        <form method="POST" action="{{ route('purchase-orders.update-status', $order) }}" class="flex gap-2">
-            @csrf
-            @method('PATCH')
-            <input type="hidden" name="status" value="received">
-            <button type="submit" class="bg-green-600 text-white text-sm px-3 py-1.5 rounded hover:bg-green-700">Mark Received</button>
-        </form>
+    @if ($order->status === 'pending' && auth()->user()->hasPermission('purchaseorder.update'))
+        <div class="flex gap-2">
+            <form method="POST" action="{{ route('purchase-orders.update-status', $order) }}">
+                @csrf
+                @method('PATCH')
+                <input type="hidden" name="status" value="received">
+                <button type="submit" class="bg-green-600 text-white text-sm px-3 py-1.5 rounded hover:bg-green-700">Mark Received</button>
+            </form>
+            <form method="POST" action="{{ route('purchase-orders.update-status', $order) }}" onsubmit="return confirm('Cancel this purchase order?');">
+                @csrf
+                @method('PATCH')
+                <input type="hidden" name="status" value="cancelled">
+                <button type="submit" class="border border-red-300 text-red-600 text-sm px-3 py-1.5 rounded hover:bg-red-50">Cancel</button>
+            </form>
+        </div>
     @endif
 </div>
 

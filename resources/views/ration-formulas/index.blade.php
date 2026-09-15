@@ -5,7 +5,9 @@
 @section('content')
 <div class="flex items-center justify-between mb-6">
     <h1 class="text-2xl font-semibold">Ration Formulas</h1>
-    <a href="{{ route('ration-formulas.create') }}" class="bg-gray-900 text-white text-sm px-4 py-2 rounded hover:bg-gray-700">+ New Ration Formula</a>
+    @if (auth()->user()->hasPermission('rationformula.create'))
+        <a href="{{ route('ration-formulas.create') }}" class="bg-gray-900 text-white text-sm px-4 py-2 rounded hover:bg-gray-700">+ New Ration Formula</a>
+    @endif
 </div>
 
 <div class="bg-white rounded shadow overflow-hidden">

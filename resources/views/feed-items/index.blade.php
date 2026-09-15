@@ -9,7 +9,7 @@
     <div class="lg:col-span-2 bg-white rounded shadow overflow-hidden">
         <table class="w-full text-sm">
             <thead class="bg-gray-100 text-left text-gray-600">
-                <tr><th class="px-4 py-2">Name</th><th class="px-4 py-2">Unit</th><th class="px-4 py-2">Cost/Unit</th><th class="px-4 py-2">Warehouse</th></tr>
+                <tr><th class="px-4 py-2">Name</th><th class="px-4 py-2">Unit</th><th class="px-4 py-2">Cost/Unit</th><th class="px-4 py-2">Warehouse</th><th class="px-4 py-2"></th></tr>
             </thead>
             <tbody>
                 @forelse ($feedItems as $item)
@@ -18,9 +18,17 @@
                         <td class="px-4 py-2">{{ $item->unit }}</td>
                         <td class="px-4 py-2">{{ number_format($item->cost_per_unit, 2) }}</td>
                         <td class="px-4 py-2">{{ $item->warehouse->name ?? '—' }}</td>
+                        <td class="px-4 py-2 text-right whitespace-nowrap">
+                            <a href="{{ route('feed-items.edit', $item) }}" class="text-blue-600 hover:underline text-xs">Edit</a>
+                            <form method="POST" action="{{ route('feed-items.destroy', $item) }}" class="inline" onsubmit="return confirm('Delete this feed item?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:underline text-xs ml-2">Delete</button>
+                            </form>
+                        </td>
                     </tr>
                 @empty
-                    <tr><td colspan="4" class="px-4 py-6 text-center text-gray-500">No feed items yet.</td></tr>
+                    <tr><td colspan="5" class="px-4 py-6 text-center text-gray-500">No feed items yet.</td></tr>
                 @endforelse
             </tbody>
         </table>

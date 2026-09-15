@@ -61,4 +61,47 @@ class RationFormulaController extends Controller
             'dailyCostPerHead' => $rationFormula->dailyCostPerHead(),
         ]);
     }
+
+    public function edit(RationFormula $rationFormula)
+    {
+        $rationFormula->load('items');
+
+        return view('ration-formulas.edit', [
+            'formula' => $rationFormula,
+            'speciesList' => Species::orderBy('name')->get(),
+            'feedItems' => FeedItem::orderBy('name')->get(),
+        ]);
+    }
+
+    public function update(StoreRationFormulaRequest $request, RationFormula $rationFormula)
+    {
+        $validated = $request->validated();
+
+        DB::transaction(function () use ($validated, $rationFormula) {
+            $rationFormula->update([
+                'name' => $validated['name'],
+                'species_id' => $validated['species_id'],
+                'stage' => $validated['stage'],
+            ]);
+
+            $rationFormula->items()->delete();
+
+            foreach ($validated['items'] as $item) {
+                RationFormulaItem::create([
+                    'ration_formula_id' => $rationFormula->id,
+                    'feed_item_id' => $item['feed_item_id'],
+                    'quantity_kg_per_head' => $item['quantity_kg_per_head'],
+                ]);
+            }
+        });
+
+        return redirect()->route('ration-formulas.show', $rationFormula)->with('status', 'Ration formula updated.');
+    }
+
+    public function destroy(RationFormula $rationFormula)
+    {
+        $rationFormula->delete();
+
+        return redirect()->route('ration-formulas.index')->with('status', 'Ration formula deleted.');
+    }
 }

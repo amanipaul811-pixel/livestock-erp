@@ -6,8 +6,10 @@ unit for profitability reporting.
 
 ## Stack
 
-- Laravel 13, SQLite (local dev), Sanctum token auth (API) + session auth (web UI)
+- Laravel 13, PostgreSQL (dev and prod — target deploy is Render + managed
+  Postgres), Sanctum token auth (API) + session auth (web UI)
 - `database/migrations/` — 24 domain migrations plus Sanctum's `personal_access_tokens` table
+- `database/factories/` — a factory per domain model, used by the test suite
 - `app/Models/` — Eloquent models with relationships **and** the business-logic
   methods that compute KPIs on the fly rather than storing stale numbers:
   - `Animal::averageDailyGainKg()`, `latestWeightKg()`, `isReadyToSell()`
@@ -22,6 +24,8 @@ unit for profitability reporting.
   one per write endpoint
 - `app/Http/Middleware/EnsurePermission.php` — RBAC gate (`permission:<code>`
   middleware) backed by `User::hasPermission()`
+- `tests/` — 85 tests (feature tests per resource + unit tests for every KPI
+  calculation); run with `composer test` or `php artisan test`
 
 ## Workflow coverage
 
@@ -36,8 +40,19 @@ unit for profitability reporting.
   against the balance (capped server-side — can't overpay)
 - **Overhead** — batch-level expenses (labor, utilities, transport, rent)
   factor straight into `netProfit()`
+- **Admin** — manage staff accounts and roles at `/users` (gated by
+  `user.manage`)
+
+Every master-data resource (batches, suppliers, warehouses, customers, feed
+items, ration formulas) supports full create/edit/delete through the web UI,
+with delete blocked server-side (a friendly error, not a DB constraint crash)
+when dependent records exist.
 
 ## Getting started
+
+Requires a local PostgreSQL instance (dev intentionally mirrors the Render +
+managed Postgres production target — see `.env.example` for the connection
+vars to fill in).
 
 ```bash
 composer install
@@ -72,22 +87,28 @@ the same `User` model and credentials.
 
 ## RBAC
 
-`permission:<code>` middleware sits on the write routes that have a matching
-seeded permission (`batch.create`, `animal.create`, `weighin.create`,
+`permission:<code>` middleware sits on every route with a matching seeded
+permission (`batch.create`/`.update`, `animal.create`, `weighin.create`,
 `feedlog.create`, `healthrecord.create`, `expense.create`,
 `rationformula.create`, `animalmovement.create`, `salesorder.create`,
 `purchaseorder.create`/`.update`, `supplier.create`, `warehouse.create`,
-`dashboard.view` — API only, since the web dashboard is the post-login
-landing page for every role). A 403 names the missing permission.
+`user.manage`, `dashboard.view` — API only, since the web dashboard is the
+post-login landing page for every role). A 403 names the missing permission.
 
-Not wired to anything yet: `sale.approve` and `user.manage` are seeded but
-have no corresponding action in the app (no sale-approval step, no user
-management UI). Payments (sales or purchase order) aren't permission-gated —
-any authenticated user can record one.
+This applies to the `GET` create/edit routes too, not just the write
+endpoints — a role without the permission is turned away before it can fill
+out a form it isn't allowed to submit. The nav and page-level buttons
+additionally hide anything the current user can't act on, as a UX layer on
+top of that -- but the routes themselves are what actually block it.
+
+Not wired to anything: `sale.approve` was removed from the seed list (no
+approval step exists in this workflow — sales settle immediately on
+creation). Payments (sales or purchase order) aren't permission-gated — any
+authenticated user can record one.
 
 ## Not included (known gaps)
 
-- Sale/purchase-order approval workflow, user management UI
-- CRUD for suppliers/warehouses is create-only (no edit/delete)
-- Web forms don't hide actions a role lacks permission for — a Vet can open
-  the "New Batch" form and only finds out at submit (403)
+- No sale/purchase-order approval workflow (by design — see RBAC above)
+- Password reset flow (no forgot-password UI; an admin can reset a user's
+  password from `/users`)
+- Rate limiting on login, Sanctum token expiration policy

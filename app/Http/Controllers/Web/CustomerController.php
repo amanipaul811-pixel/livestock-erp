@@ -19,4 +19,27 @@ class CustomerController extends Controller
 
         return redirect()->route('customers.index')->with('status', 'Customer added.');
     }
+
+    public function edit(Customer $customer)
+    {
+        return view('customers.edit', ['customer' => $customer]);
+    }
+
+    public function update(StoreCustomerRequest $request, Customer $customer)
+    {
+        $customer->update($request->validated());
+
+        return redirect()->route('customers.index')->with('status', 'Customer updated.');
+    }
+
+    public function destroy(Customer $customer)
+    {
+        if ($customer->salesOrders()->exists()) {
+            return back()->withErrors(['customer' => 'Cannot delete a customer with sales orders on record.']);
+        }
+
+        $customer->delete();
+
+        return redirect()->route('customers.index')->with('status', 'Customer deleted.');
+    }
 }

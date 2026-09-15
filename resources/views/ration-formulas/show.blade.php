@@ -3,7 +3,19 @@
 @section('title', $formula->name)
 
 @section('content')
-<h1 class="text-2xl font-semibold mb-1">{{ $formula->name }}</h1>
+<div class="flex items-center justify-between mb-1">
+    <h1 class="text-2xl font-semibold">{{ $formula->name }}</h1>
+    @if (auth()->user()->hasPermission('rationformula.create'))
+    <div class="flex gap-2">
+        <a href="{{ route('ration-formulas.edit', $formula) }}" class="border text-sm px-4 py-2 rounded hover:bg-gray-100">Edit</a>
+        <form method="POST" action="{{ route('ration-formulas.destroy', $formula) }}" onsubmit="return confirm('Delete this ration formula?');">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="border border-red-300 text-red-600 text-sm px-4 py-2 rounded hover:bg-red-50">Delete</button>
+        </form>
+    </div>
+    @endif
+</div>
 <p class="text-sm text-gray-500 mb-6">{{ $formula->species->name }} &middot; Stage: {{ $formula->stage }}</p>
 
 <div class="bg-white rounded shadow p-4 mb-6 max-w-sm">

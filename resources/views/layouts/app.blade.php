@@ -16,7 +16,9 @@
                 <a href="{{ route('dashboard') }}" class="font-semibold">Livestock ERP</a>
                 <a href="{{ route('batches.index') }}" class="text-sm text-gray-300 hover:text-white">Batches</a>
                 <a href="{{ route('purchase-orders.index') }}" class="text-sm text-gray-300 hover:text-white">Purchase Orders</a>
-                <a href="{{ route('sales-orders.create') }}" class="text-sm text-gray-300 hover:text-white">Sell</a>
+                @if (auth()->user()->hasPermission('salesorder.create'))
+                    <a href="{{ route('sales-orders.create') }}" class="text-sm text-gray-300 hover:text-white">Sell</a>
+                @endif
                 <div x-data="{ open: false }" @click.outside="open = false" class="relative">
                     <button @click="open = !open" class="text-sm text-gray-300 hover:text-white flex items-center gap-1">
                         Setup
@@ -28,6 +30,9 @@
                         <a href="{{ route('suppliers.index') }}" class="block px-4 py-2 hover:bg-gray-100">Suppliers</a>
                         <a href="{{ route('warehouses.index') }}" class="block px-4 py-2 hover:bg-gray-100">Warehouses</a>
                         <a href="{{ route('ration-formulas.index') }}" class="block px-4 py-2 hover:bg-gray-100">Ration Formulas</a>
+                        @if (auth()->user()->hasPermission('user.manage'))
+                            <a href="{{ route('users.index') }}" class="block px-4 py-2 hover:bg-gray-100 border-t">Users</a>
+                        @endif
                     </div>
                 </div>
             </div>

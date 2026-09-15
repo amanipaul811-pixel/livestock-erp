@@ -9,7 +9,7 @@
     <div class="lg:col-span-2 bg-white rounded shadow overflow-hidden">
         <table class="w-full text-sm">
             <thead class="bg-gray-100 text-left text-gray-600">
-                <tr><th class="px-4 py-2">Name</th><th class="px-4 py-2">Type</th><th class="px-4 py-2">Location</th></tr>
+                <tr><th class="px-4 py-2">Name</th><th class="px-4 py-2">Type</th><th class="px-4 py-2">Location</th><th class="px-4 py-2"></th></tr>
             </thead>
             <tbody>
                 @forelse ($warehouses as $warehouse)
@@ -17,14 +17,25 @@
                         <td class="px-4 py-2 font-medium">{{ $warehouse->name }}</td>
                         <td class="px-4 py-2">{{ $warehouse->type }}</td>
                         <td class="px-4 py-2">{{ $warehouse->location ?? '—' }}</td>
+                        <td class="px-4 py-2 text-right whitespace-nowrap">
+                            @if (auth()->user()->hasPermission('warehouse.create'))
+                                <a href="{{ route('warehouses.edit', $warehouse) }}" class="text-blue-600 hover:underline text-xs">Edit</a>
+                                <form method="POST" action="{{ route('warehouses.destroy', $warehouse) }}" class="inline" onsubmit="return confirm('Delete this warehouse?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:underline text-xs ml-2">Delete</button>
+                                </form>
+                            @endif
+                        </td>
                     </tr>
                 @empty
-                    <tr><td colspan="3" class="px-4 py-6 text-center text-gray-500">No warehouses yet.</td></tr>
+                    <tr><td colspan="4" class="px-4 py-6 text-center text-gray-500">No warehouses yet.</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
 
+    @if (auth()->user()->hasPermission('warehouse.create'))
     <form method="POST" action="{{ route('warehouses.store') }}" class="bg-white rounded shadow p-4 space-y-3 h-fit">
         @csrf
         <h2 class="font-semibold">Add Warehouse</h2>
@@ -47,5 +58,6 @@
         </div>
         <button type="submit" class="w-full bg-gray-900 text-white text-sm px-3 py-2 rounded hover:bg-gray-700">Add</button>
     </form>
+    @endif
 </div>
 @endsection

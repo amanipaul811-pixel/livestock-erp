@@ -1,0 +1,48 @@
+@extends('layouts.app')
+
+@section('title', 'Edit '.$batch->batch_code)
+
+@section('content')
+<h1 class="text-2xl font-semibold mb-1">Edit {{ $batch->batch_code }}</h1>
+<p class="text-sm text-gray-500 mb-6">Species and start date are fixed once a batch is created.</p>
+
+<form method="POST" action="{{ route('batches.update', $batch) }}" class="bg-white rounded shadow p-6 max-w-lg space-y-4">
+    @csrf
+    @method('PUT')
+    <div>
+        <label class="block text-sm font-medium mb-1">Pen</label>
+        <select name="pen_id" class="w-full border rounded px-3 py-2 text-sm">
+            <option value="">Unassigned</option>
+            @foreach ($pens as $pen)
+                <option value="{{ $pen->id }}" @selected(old('pen_id', $batch->pen_id) == $pen->id)>{{ $pen->name }} ({{ $pen->stage }})</option>
+            @endforeach
+        </select>
+    </div>
+    <div>
+        <label class="block text-sm font-medium mb-1">Status</label>
+        <select name="status" class="w-full border rounded px-3 py-2 text-sm">
+            @foreach (['active', 'partially_sold', 'closed'] as $status)
+                <option value="{{ $status }}" @selected(old('status', $batch->status) === $status)>{{ $status }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm font-medium mb-1">Expected End Date</label>
+            <input type="date" name="expected_end_date" value="{{ old('expected_end_date', optional($batch->expected_end_date)->format('Y-m-d')) }}" class="w-full border rounded px-3 py-2 text-sm">
+        </div>
+        <div>
+            <label class="block text-sm font-medium mb-1">Actual End Date</label>
+            <input type="date" name="actual_end_date" value="{{ old('actual_end_date', optional($batch->actual_end_date)->format('Y-m-d')) }}" class="w-full border rounded px-3 py-2 text-sm">
+        </div>
+    </div>
+    <div>
+        <label class="block text-sm font-medium mb-1">Notes</label>
+        <textarea name="notes" rows="3" class="w-full border rounded px-3 py-2 text-sm">{{ old('notes', $batch->notes) }}</textarea>
+    </div>
+    <div class="flex gap-2">
+        <button type="submit" class="bg-gray-900 text-white text-sm px-4 py-2 rounded hover:bg-gray-700">Save</button>
+        <a href="{{ route('batches.show', $batch) }}" class="border text-sm px-4 py-2 rounded hover:bg-gray-100">Cancel</a>
+    </div>
+</form>
+@endsection

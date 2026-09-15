@@ -42,10 +42,27 @@ class BatchTest extends TestCase
         $this->assertDatabaseMissing('batches', ['batch_code' => 'WEB-B-2']);
     }
 
-    public function test_the_batch_create_form_is_still_visible_to_a_vet(): void
+    public function test_a_vet_is_turned_away_from_the_create_form_itself_not_just_the_submit(): void
     {
+        // Previously the create form was reachable and only rejected on submit
+        // (a wasted-effort UX gap); the GET route is now gated the same as
+        // the POST, so a role without the permission never even sees it.
         $response = $this->actingAs($this->userWithRole('Vet'))->get('/batches/create');
 
-        $response->assertOk();
+        $response->assertForbidden();
+    }
+
+    public function test_the_new_batch_link_is_hidden_from_a_vet_on_the_dashboard(): void
+    {
+        $response = $this->actingAs($this->userWithRole('Vet'))->get('/dashboard');
+
+        $response->assertOk()->assertDontSee('New Batch');
+    }
+
+    public function test_the_new_batch_link_is_visible_to_an_admin_on_the_dashboard(): void
+    {
+        $response = $this->actingAs($this->adminUser())->get('/dashboard');
+
+        $response->assertOk()->assertSee('New Batch');
     }
 }
