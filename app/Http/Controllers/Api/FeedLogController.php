@@ -8,6 +8,9 @@ use App\Models\Batch;
 use App\Models\FeedItem;
 use App\Models\FeedLog;
 use App\Models\FeedStockMovement;
+use App\Models\User;
+use App\Notifications\LowFeedStockNotification;
+use Illuminate\Support\Facades\Notification;
 
 class FeedLogController extends Controller
 {
@@ -23,6 +26,8 @@ class FeedLogController extends Controller
 
         $feedLog = FeedLog::create($validated);
 
+        $wasLowStock = $feedItem->isLowStock();
+
         FeedStockMovement::create([
             'feed_item_id' => $feedItem->id,
             'type' => 'out',
@@ -31,6 +36,10 @@ class FeedLogController extends Controller
             'recorded_by' => $validated['recorded_by'],
             'occurred_at' => $validated['feed_date'],
         ]);
+
+        if (! $wasLowStock && $feedItem->fresh()->isLowStock()) {
+            Notification::send(User::withPermission('feedlog.create')->get(), new LowFeedStockNotification($feedItem));
+        }
 
         return response()->json($feedLog, 201);
     }

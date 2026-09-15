@@ -10,6 +10,7 @@ use App\Http\Controllers\Web\ExpenseController;
 use App\Http\Controllers\Web\FeedItemController;
 use App\Http\Controllers\Web\FeedLogController;
 use App\Http\Controllers\Web\HealthRecordController;
+use App\Http\Controllers\Web\NotificationController;
 use App\Http\Controllers\Web\PasswordResetController;
 use App\Http\Controllers\Web\PaymentController;
 use App\Http\Controllers\Web\PurchaseOrderController;
@@ -105,6 +106,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/purchase-orders/{purchaseOrder}', [PurchaseOrderController::class, 'show'])->name('purchase-orders.show');
     Route::patch('/purchase-orders/{purchaseOrder}/status', [PurchaseOrderController::class, 'updateStatus'])->name('purchase-orders.update-status')->middleware('permission:purchaseorder.update');
     Route::post('/purchase-orders/{purchaseOrder}/payments', [PaymentController::class, 'storeForPurchaseOrder'])->name('purchase-order-payments.store');
+
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
+    Route::get('/notifications/{notification}/open', [NotificationController::class, 'open'])->name('notifications.open');
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index')->middleware('permission:user.manage');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create')->middleware('permission:user.manage');

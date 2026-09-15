@@ -46,4 +46,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Batch::class, 'created_by');
     }
+
+    // Active users whose role grants the given permission -- used to target
+    // notifications at the people who can act on them.
+    public function scopeWithPermission($query, string $code)
+    {
+        return $query->where('is_active', true)
+            ->whereHas('role.permissions', fn ($q) => $q->where('code', $code));
+    }
 }
