@@ -4,17 +4,26 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Notifications\DatabaseNotification;
 
 class NotificationController extends Controller
 {
-    public function open(Request $request, DatabaseNotification $notification)
+    public function open(Request $request, string $notification)
     {
-        abort_unless($notification->notifiable_id === $request->user()->id, 403);
+        // Scoped to the current user's own notifications, not a global
+        // lookup -- so a stale link (already deleted/pruned, or from
+        // before a database reset regenerated every notification's id)
+        // and someone else's notification both land here as "not found"
+        // instead of a raw 404/403 error page, and either way we send the
+        // user somewhere useful instead of leaving them on a dead end.
+        $record = $request->user()->notifications()->find($notification);
 
-        $notification->markAsRead();
+        if (! $record) {
+            return redirect()->route('dashboard')->with('status', 'That notification is no longer available.');
+        }
 
-        return redirect($notification->data['url'] ?? route('dashboard'));
+        $record->markAsRead();
+
+        return redirect($record->data['url'] ?? route('dashboard'));
     }
 
     public function markAllRead(Request $request)

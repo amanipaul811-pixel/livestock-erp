@@ -107,7 +107,17 @@ class NotificationTest extends TestCase
 
         $response = $this->actingAs($intruder)->get("/notifications/{$notification->id}/open");
 
-        $response->assertForbidden();
+        $response->assertRedirect(route('dashboard'));
+        $this->assertNull($notification->fresh()->read_at);
+    }
+
+    public function test_opening_a_stale_or_missing_notification_link_redirects_gracefully(): void
+    {
+        $user = $this->adminUser();
+
+        $response = $this->actingAs($user)->get('/notifications/does-not-exist/open');
+
+        $response->assertRedirect(route('dashboard'));
     }
 
     public function test_mark_all_read_clears_unread_notifications(): void
