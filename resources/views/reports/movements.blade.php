@@ -58,8 +58,8 @@
         <thead class="bg-gray-50 text-left text-gray-600 dark:bg-gray-800 dark:text-gray-300">
             <tr>
                 <th class="px-4 py-2">Date</th><th class="px-4 py-2">Tag</th><th class="px-4 py-2">Species</th>
-                <th class="px-4 py-2">Batch</th><th class="px-4 py-2">From Pen</th><th class="px-4 py-2">To Pen</th>
-                <th class="px-4 py-2">Reason</th>
+                <th class="px-4 py-2">Batch</th><th class="px-4 py-2">From Pen</th><th class="px-4 py-2">Days</th>
+                <th class="px-4 py-2">Weight</th><th class="px-4 py-2">To Pen</th><th class="px-4 py-2">Reason</th>
             </tr>
         </thead>
         <tbody>
@@ -70,11 +70,13 @@
                     <td class="px-4 py-2">{{ $m->animal->species->name }}</td>
                     <td class="px-4 py-2"><a href="{{ route('batches.show', $m->animal->batch) }}" class="hover:underline">{{ $m->animal->batch->batch_code }}</a></td>
                     <td class="px-4 py-2">{{ $m->fromPen->name ?? '—' }}</td>
+                    <td class="px-4 py-2">{{ $m->fromPen ? $m->daysInPen() : '—' }}</td>
+                    <td class="px-4 py-2">{{ $m->weight_kg_at_move ? number_format($m->weight_kg_at_move, 1).' kg' : '—' }}</td>
                     <td class="px-4 py-2">{{ $m->toPen->name ?? '—' }}</td>
                     <td class="px-4 py-2">{{ $m->reason ?? '—' }}</td>
                 </tr>
             @empty
-                <tr><td colspan="7" class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">No movements match this filter.</td></tr>
+                <tr><td colspan="9" class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">No movements match this filter.</td></tr>
             @endforelse
         </tbody>
     </table>

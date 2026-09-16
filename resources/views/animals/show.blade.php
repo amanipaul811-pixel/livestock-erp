@@ -105,22 +105,47 @@
 
 <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4 mt-6 max-w-xl">
     <h2 class="font-semibold mb-3">Pen Movements</h2>
+    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Each move records what happened to the animal in the pen it's leaving: how long it stayed, its weight at the time, and any health records logged there.</p>
     <table class="w-full text-sm mb-4">
         <thead class="text-left text-gray-500 dark:text-gray-400">
-            <tr><th class="py-1">Date</th><th class="py-1">From</th><th class="py-1">To</th><th class="py-1">Reason</th></tr>
+            <tr><th class="py-1">Date</th><th class="py-1">From</th><th class="py-1">To</th><th class="py-1">Days</th><th class="py-1">Weight</th><th class="py-1">Reason</th><th class="py-1"></th></tr>
         </thead>
-        <tbody>
-            @forelse ($animal->movements as $movement)
+        @forelse ($animal->movements as $movement)
+            <tbody x-data="{ open: false }">
                 <tr class="border-t border-gray-200 dark:border-gray-800">
                     <td class="py-1.5">{{ $movement->move_date->format('Y-m-d') }}</td>
                     <td class="py-1.5">{{ $movement->fromPen->name ?? '—' }}</td>
                     <td class="py-1.5">{{ $movement->toPen->name }}</td>
+                    <td class="py-1.5">{{ $movement->fromPen ? $movement->daysInPen() : '—' }}</td>
+                    <td class="py-1.5">{{ $movement->weight_kg_at_move ? number_format($movement->weight_kg_at_move, 1).' kg' : '—' }}</td>
                     <td class="py-1.5">{{ $movement->reason ?? '—' }}</td>
+                    <td class="py-1.5 text-right">
+                        <button type="button" @click="open = !open" class="text-indigo-600 dark:text-indigo-400 hover:underline text-xs" x-text="open ? 'Hide' : 'Details'"></button>
+                    </td>
                 </tr>
-            @empty
-                <tr><td colspan="4" class="py-4 text-center text-gray-500 dark:text-gray-400">No pen transfers yet.</td></tr>
-            @endforelse
-        </tbody>
+                <tr x-show="open" x-cloak class="border-t border-gray-100 dark:border-gray-800/60">
+                    <td colspan="7" class="py-2 text-xs text-gray-500 dark:text-gray-400">
+                        @if ($movement->fromPen)
+                            @php $healthDuringStay = $movement->healthRecordsDuringStay(); $weighInsDuringStay = $movement->weighInsDuringStay(); @endphp
+                            <p class="mb-1">{{ $weighInsDuringStay->count() }} weigh-in(s) recorded in {{ $movement->fromPen->name }}.</p>
+                            @if ($healthDuringStay->isEmpty())
+                                <p>No health records during this stay.</p>
+                            @else
+                                <ul class="list-disc list-inside space-y-0.5">
+                                    @foreach ($healthDuringStay as $record)
+                                        <li>{{ $record->record_date->format('Y-m-d') }} &middot; {{ $record->record_type }}@if($record->cost > 0) &middot; {{ number_format($record->cost, 2) }}@endif</li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        @else
+                            <p>Animal entered the herd directly into {{ $movement->toPen->name }} -- no prior pen to summarize.</p>
+                        @endif
+                    </td>
+                </tr>
+            </tbody>
+        @empty
+            <tbody><tr><td colspan="7" class="py-4 text-center text-gray-500 dark:text-gray-400">No pen transfers yet.</td></tr></tbody>
+        @endforelse
     </table>
 
     @if ($animal->status === 'on_feed' && auth()->user()->hasPermission('animalmovement.create'))

@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use App\Models\Animal;
 use App\Models\Pen;
+use App\Models\WeighIn;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\Concerns\CreatesUsers;
@@ -32,6 +33,25 @@ class AnimalMovementTest extends TestCase
             'animal_id' => $animal->id,
             'from_pen_id' => $fromPen->id,
             'to_pen_id' => $toPen->id,
+        ]);
+    }
+
+    public function test_moving_an_animal_freezes_its_latest_weight_on_the_movement(): void
+    {
+        Sanctum::actingAs($this->userWithRole('Feeder'));
+        $fromPen = Pen::factory()->create();
+        $toPen = Pen::factory()->create();
+        $animal = Animal::factory()->create(['current_pen_id' => $fromPen->id, 'entry_weight_kg' => 250]);
+        WeighIn::factory()->create(['animal_id' => $animal->id, 'weight_kg' => 312, 'weigh_date' => now()->subDay()]);
+
+        $this->postJson("/api/animals/{$animal->id}/movements", [
+            'to_pen_id' => $toPen->id,
+            'move_date' => now()->toDateString(),
+        ])->assertCreated();
+
+        $this->assertDatabaseHas('animal_movements', [
+            'animal_id' => $animal->id,
+            'weight_kg_at_move' => 312,
         ]);
     }
 

@@ -24,10 +24,11 @@ class AnimalMovementReportController extends Controller
         return Pdf::loadView('reports.table-pdf', [
             'title' => 'Animal Movement Report',
             'subtitle' => "{$data['from']} to {$data['to']}",
-            'headings' => ['Date', 'Tag', 'Species', 'Batch', 'From Pen', 'To Pen', 'Reason'],
+            'headings' => ['Date', 'Tag', 'Species', 'Batch', 'From Pen', 'Days', 'Weight (kg)', 'To Pen', 'Reason'],
             'rows' => $data['rows']->map(fn (AnimalMovement $m) => [
                 $m->move_date->format('Y-m-d'), $m->animal->tag_id, $m->animal->species->name,
-                $m->animal->batch->batch_code, $m->fromPen->name ?? '—', $m->toPen->name ?? '—', $m->reason ?? '—',
+                $m->animal->batch->batch_code, $m->fromPen->name ?? '—', $m->fromPen ? $m->daysInPen() : '—',
+                $m->weight_kg_at_move ? number_format($m->weight_kg_at_move, 1) : '—', $m->toPen->name ?? '—', $m->reason ?? '—',
             ]),
             'summary' => ['Total Movements' => $data['rows']->count()],
         ])->download("movements-report-{$data['from']}-to-{$data['to']}.pdf");
@@ -39,12 +40,13 @@ class AnimalMovementReportController extends Controller
 
         $rows = $data['rows']->map(fn (AnimalMovement $m) => [
             $m->move_date->format('Y-m-d'), $m->animal->tag_id, $m->animal->species->name,
-            $m->animal->batch->batch_code, $m->fromPen->name ?? '', $m->toPen->name ?? '', $m->reason ?? '',
+            $m->animal->batch->batch_code, $m->fromPen->name ?? '', $m->fromPen ? $m->daysInPen() : '',
+            $m->weight_kg_at_move, $m->toPen->name ?? '', $m->reason ?? '',
         ]);
 
         return (new TableExport(
             $rows,
-            ['Date', 'Tag', 'Species', 'Batch', 'From Pen', 'To Pen', 'Reason'],
+            ['Date', 'Tag', 'Species', 'Batch', 'From Pen', 'Days', 'Weight (kg)', 'To Pen', 'Reason'],
             'Animal Movement Report'
         ))->download("movements-report-{$data['from']}-to-{$data['to']}.xlsx");
     }

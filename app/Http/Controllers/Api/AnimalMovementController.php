@@ -28,6 +28,7 @@ class AnimalMovementController extends Controller
             'animal_id' => $animal->id,
             'from_pen_id' => $animal->current_pen_id,
             'to_pen_id' => $validated['to_pen_id'],
+            'weight_kg_at_move' => $animal->latestWeightKg(),
             'move_date' => $validated['move_date'],
             'reason' => $validated['reason'] ?? null,
         ]);
