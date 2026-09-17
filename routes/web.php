@@ -5,6 +5,7 @@ use App\Http\Controllers\Web\AnimalMovementController;
 use App\Http\Controllers\Web\AnimalMovementReportController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\BatchController;
+use App\Http\Controllers\Web\CalendarController;
 use App\Http\Controllers\Web\CustomerController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\ExpenseController;
@@ -50,6 +51,7 @@ Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name(
 // but that's a UX nicety on top of this -- this is what actually blocks it.
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
 
     Route::get('/batches', [BatchController::class, 'index'])->name('batches.index');
     Route::get('/batches/create', [BatchController::class, 'create'])->name('batches.create')->middleware('permission:batch.create');

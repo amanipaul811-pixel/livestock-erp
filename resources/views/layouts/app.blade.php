@@ -29,8 +29,10 @@
 <body class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100" x-data="{ sidebarOpen: false }">
     @auth
     @php
-        $setupActive = request()->routeIs(['feed-items.*', 'customers.*', 'suppliers.*', 'warehouses.*', 'ration-formulas.*', 'users.*']);
-        $reportsActive = request()->routeIs('reports.*');
+        $purchaseActive = request()->routeIs(['purchase-orders.*', 'suppliers.*', 'reports.purchases']);
+        $inventoryActive = request()->routeIs(['feed-items.*', 'warehouses.*', 'ration-formulas.*', 'reports.stock']);
+        $salesActive = request()->routeIs(['sales-orders.*', 'customers.*', 'reports.sales']);
+        $reportsActive = request()->routeIs(['reports.health', 'reports.movements']);
     @endphp
 
     <div x-cloak x-show="sidebarOpen" x-transition.opacity @click="sidebarOpen = false"
@@ -51,9 +53,7 @@
             @php
                 $links = [
                     ['dashboard', route('dashboard'), 'Dashboard', 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
-                    ['batches.*', route('batches.index'), 'Batches', 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'],
-                    ['purchase-orders.*', route('purchase-orders.index'), 'Purchase Orders', 'M9 2a1 1 0 00-1 1v1H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-3V3a1 1 0 00-1-1H9z'],
-                    ['scan', route('scan'), 'Scan', 'M4 8V4h4M4 16v4h4M16 4h4v4M16 20h4v-4M4 12h16'],
+                    ['calendar', route('calendar'), 'Calendar', 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
                 ];
             @endphp
             @foreach ($links as [$routePattern, $href, $label, $icon])
@@ -64,67 +64,108 @@
                 </a>
             @endforeach
 
-            @if (auth()->user()->hasPermission('salesorder.create'))
-                <a href="{{ route('sales-orders.create') }}"
-                   class="flex items-center gap-3 rounded-md px-3 py-2 mb-0.5 {{ request()->routeIs('sales-orders.create') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8c-1.5 0-3 .5-3 2s1.5 2 3 2 3 .5 3 2-1.5 2-3 2m0-8V6m0 12v-2M3 12a9 9 0 1018 0 9 9 0 00-18 0z"/></svg>
-                    Sell
+            {{-- Purchase: everything to do with buying (animals, feed, medicine) --}}
+            <div x-data="{ open: {{ $purchaseActive ? 'true' : 'false' }} }">
+                <button @click="open = !open" class="flex w-full items-center justify-between rounded-md px-3 py-2 mb-0.5 {{ $purchaseActive ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
+                    <span class="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2a1 1 0 00-1 1v1H5a2 2 0 00-2 2v13a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-3V3a1 1 0 00-1-1H9z"/></svg>
+                        Purchase
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 transition-transform shrink-0" :class="open ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.14l3.71-3.91a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+                </button>
+                <div x-show="open" x-cloak>
+                    <a href="{{ route('purchase-orders.index') }}" class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs('purchase-orders.*') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">Purchase Orders</a>
+                    <a href="{{ route('suppliers.index') }}" class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs('suppliers.*') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">Suppliers</a>
+                    @if (auth()->user()->hasPermission('dashboard.view'))
+                        <a href="{{ route('reports.purchases') }}" class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs('reports.purchases') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">Purchases Report</a>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Inventory: feed stock and what it's made of --}}
+            <div x-data="{ open: {{ $inventoryActive ? 'true' : 'false' }} }">
+                <button @click="open = !open" class="flex w-full items-center justify-between rounded-md px-3 py-2 mb-0.5 {{ $inventoryActive ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
+                    <span class="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4zm0 5l9 4 9-4M3 7v10l9 4 9-4V7"/></svg>
+                        Inventory
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 transition-transform shrink-0" :class="open ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.14l3.71-3.91a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+                </button>
+                <div x-show="open" x-cloak>
+                    <a href="{{ route('feed-items.index') }}" class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs('feed-items.*') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">Feed Items</a>
+                    <a href="{{ route('warehouses.index') }}" class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs('warehouses.*') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">Warehouses</a>
+                    <a href="{{ route('ration-formulas.index') }}" class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs('ration-formulas.*') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">Ration Formulas</a>
+                    @if (auth()->user()->hasPermission('dashboard.view'))
+                        <a href="{{ route('reports.stock') }}" class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs('reports.stock') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">Stock Report</a>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Sales: selling animals and who to --}}
+            <div x-data="{ open: {{ $salesActive ? 'true' : 'false' }} }">
+                <button @click="open = !open" class="flex w-full items-center justify-between rounded-md px-3 py-2 mb-0.5 {{ $salesActive ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
+                    <span class="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8c-1.5 0-3 .5-3 2s1.5 2 3 2 3 .5 3 2-1.5 2-3 2m0-8V6m0 12v-2M3 12a9 9 0 1018 0 9 9 0 00-18 0z"/></svg>
+                        Sales
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 transition-transform shrink-0" :class="open ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.14l3.71-3.91a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+                </button>
+                <div x-show="open" x-cloak>
+                    @if (auth()->user()->hasPermission('salesorder.create'))
+                        <a href="{{ route('sales-orders.create') }}" class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs('sales-orders.create') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">New Sale</a>
+                    @endif
+                    <a href="{{ route('customers.index') }}" class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs('customers.*') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">Customers</a>
+                    @if (auth()->user()->hasPermission('dashboard.view'))
+                        <a href="{{ route('reports.sales') }}" class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs('reports.sales') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">Sales Report</a>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Finance: the P&L, with its balance sheet snapshot and AP/AR aging --}}
+            @if (auth()->user()->hasPermission('dashboard.view'))
+                <a href="{{ route('reports.index') }}"
+                   class="flex items-center gap-3 rounded-md px-3 py-2 mb-0.5 {{ request()->routeIs('reports.index') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17V9m4 8V5m4 12v-4M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    Finance
                 </a>
             @endif
 
+            <a href="{{ route('batches.index') }}"
+               class="flex items-center gap-3 rounded-md px-3 py-2 mb-0.5 {{ request()->routeIs('batches.*') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                Batches
+            </a>
+
+            <a href="{{ route('scan') }}"
+               class="flex items-center gap-3 rounded-md px-3 py-2 mb-0.5 {{ request()->routeIs('scan') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V4h4M4 16v4h4M16 4h4v4M16 20h4v-4M4 12h16"/></svg>
+                Scan
+            </a>
+
+            {{-- Leftover operational reports that don't belong to Purchase/Inventory/Sales/Finance --}}
             @if (auth()->user()->hasPermission('dashboard.view'))
                 <div x-data="{ open: {{ $reportsActive ? 'true' : 'false' }} }">
                     <button @click="open = !open" class="flex w-full items-center justify-between rounded-md px-3 py-2 mb-0.5 {{ $reportsActive ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
                         <span class="flex items-center gap-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17V9m4 8V5m4 12v-4M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                             Reports
                         </span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 transition-transform shrink-0" :class="open ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.14l3.71-3.91a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
                     </button>
                     <div x-show="open" x-cloak>
-                        @foreach ([
-                            ['reports.index', route('reports.index'), 'Profit & Loss'],
-                            ['reports.sales', route('reports.sales'), 'Sales'],
-                            ['reports.purchases', route('reports.purchases'), 'Purchases'],
-                            ['reports.stock', route('reports.stock'), 'Stock Movements'],
-                            ['reports.movements', route('reports.movements'), 'Animal Movements'],
-                            ['reports.health', route('reports.health'), 'Health'],
-                        ] as [$routePattern, $href, $label])
-                            <a href="{{ $href }}"
-                               class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs($routePattern) ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
-                                {{ $label }}
-                            </a>
-                        @endforeach
+                        <a href="{{ route('reports.movements') }}" class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs('reports.movements') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">Animal Movements</a>
+                        <a href="{{ route('reports.health') }}" class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs('reports.health') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">Health</a>
                     </div>
                 </div>
             @endif
 
-            <div x-data="{ open: {{ $setupActive ? 'true' : 'false' }} }" class="mt-4">
-                <button @click="open = !open" class="flex w-full items-center justify-between rounded-md px-3 py-2 text-xs font-semibold uppercase tracking-wide text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300">
-                    Setup
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 transition-transform" :class="open ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.14l3.71-3.91a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-                </button>
-                <div x-show="open" x-cloak>
-                    @foreach ([
-                        ['feed-items.*', route('feed-items.index'), 'Feed Items'],
-                        ['customers.*', route('customers.index'), 'Customers'],
-                        ['suppliers.*', route('suppliers.index'), 'Suppliers'],
-                        ['warehouses.*', route('warehouses.index'), 'Warehouses'],
-                        ['ration-formulas.*', route('ration-formulas.index'), 'Ration Formulas'],
-                    ] as [$routePattern, $href, $label])
-                        <a href="{{ $href }}"
-                           class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs($routePattern) ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
-                            {{ $label }}
-                        </a>
-                    @endforeach
-                    @if (auth()->user()->hasPermission('user.manage'))
-                        <a href="{{ route('users.index') }}"
-                           class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs('users.*') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
-                            Users
-                        </a>
-                    @endif
-                </div>
-            </div>
+            @if (auth()->user()->hasPermission('user.manage'))
+                <a href="{{ route('users.index') }}"
+                   class="flex items-center gap-3 rounded-md px-3 py-2 mb-0.5 {{ request()->routeIs('users.*') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    Users
+                </a>
+            @endif
         </nav>
 
         <div class="border-t border-gray-200 p-3 dark:border-gray-800">
