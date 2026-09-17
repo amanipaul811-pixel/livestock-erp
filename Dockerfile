@@ -8,7 +8,8 @@ RUN composer install \
     --no-scripts \
     --no-interaction \
     --prefer-dist \
-    --no-autoloader
+    --no-autoloader \
+    --ignore-platform-reqs
 
 COPY . .
 # --no-scripts here too: this stage's PHP build doesn't have pdo_pgsql (or
