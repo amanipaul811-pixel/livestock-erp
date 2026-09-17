@@ -31,7 +31,7 @@
     @php
         $purchaseActive = request()->routeIs(['purchase-orders.*', 'suppliers.*', 'reports.purchases']);
         $inventoryActive = request()->routeIs(['feed-items.*', 'warehouses.*', 'ration-formulas.*', 'reports.stock']);
-        $salesActive = request()->routeIs(['sales-orders.*', 'customers.*', 'reports.sales']);
+        $salesActive = request()->routeIs(['sales-orders.*', 'customers.*', 'species.*', 'reports.sales']);
         $reportsActive = request()->routeIs(['reports.health', 'reports.movements']);
     @endphp
 
@@ -115,6 +115,7 @@
                         <a href="{{ route('sales-orders.create') }}" class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs('sales-orders.create') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">New Sale</a>
                     @endif
                     <a href="{{ route('customers.index') }}" class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs('customers.*') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">Customers</a>
+                    <a href="{{ route('species.index') }}" class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs('species.*') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">Species Pricing</a>
                     @if (auth()->user()->hasPermission('dashboard.view'))
                         <a href="{{ route('reports.sales') }}" class="flex items-center gap-3 rounded-md px-3 py-2 ml-2 mb-0.5 {{ request()->routeIs('reports.sales') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">Sales Report</a>
                     @endif

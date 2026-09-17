@@ -22,6 +22,7 @@ use App\Http\Controllers\Web\RationFormulaController;
 use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\Web\SalesOrderController;
 use App\Http\Controllers\Web\SalesReportController;
+use App\Http\Controllers\Web\SpeciesController;
 use App\Http\Controllers\Web\StockReportController;
 use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\UserController;
@@ -111,6 +112,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/sales-orders', [SalesOrderController::class, 'store'])->name('sales-orders.store')->middleware('permission:salesorder.create');
     Route::get('/sales-orders/{salesOrder}', [SalesOrderController::class, 'show'])->name('sales-orders.show');
     Route::post('/sales-orders/{salesOrder}/payments', [PaymentController::class, 'store'])->name('payments.store');
+
+    Route::get('/species', [SpeciesController::class, 'index'])->name('species.index');
+    Route::put('/species/{species}/pricing', [SpeciesController::class, 'updatePricing'])->name('species.update-pricing')->middleware('permission:salesorder.create');
 
     Route::get('/purchase-orders', [PurchaseOrderController::class, 'index'])->name('purchase-orders.index');
     Route::get('/purchase-orders/create', [PurchaseOrderController::class, 'create'])->name('purchase-orders.create')->middleware('permission:purchaseorder.create');

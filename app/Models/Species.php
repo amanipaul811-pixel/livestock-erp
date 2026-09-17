@@ -11,7 +11,7 @@ class Species extends Model
 
     protected $fillable = [
         'name', 'default_cycle_days', 'target_adg_kg',
-        'target_entry_weight_kg', 'target_exit_weight_kg',
+        'target_entry_weight_kg', 'target_exit_weight_kg', 'default_price_per_kg',
     ];
 
     public function batches()

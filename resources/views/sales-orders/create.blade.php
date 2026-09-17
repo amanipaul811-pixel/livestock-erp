@@ -46,10 +46,10 @@
 
         <template x-for="(row, index) in rows" :key="index">
             <div class="grid grid-cols-12 gap-2 mb-2 items-center">
-                <select :name="`items[${index}][animal_id]`" x-model="row.animal_id" required class="col-span-6 border border-gray-300 rounded-md px-2 py-1.5 text-sm dark:border-gray-700 dark:bg-gray-800">
+                <select :name="`items[${index}][animal_id]`" x-model="row.animal_id" @change="fillDefaults(row, $event.target)" required class="col-span-6 border border-gray-300 rounded-md px-2 py-1.5 text-sm dark:border-gray-700 dark:bg-gray-800">
                     <option value="">Select animal</option>
                     @foreach ($animals as $animal)
-                        <option value="{{ $animal->id }}">{{ $animal->tag_id }} — {{ $animal->species->name }} ({{ $animal->batch->batch_code }})</option>
+                        <option value="{{ $animal->id }}" data-weight="{{ $animal->latestWeightKg() }}" data-price="{{ $animal->species->default_price_per_kg }}">{{ $animal->tag_id }} — {{ $animal->species->name }} ({{ $animal->batch->batch_code }})</option>
                     @endforeach
                 </select>
                 <input :name="`items[${index}][sale_weight_kg]`" x-model="row.sale_weight_kg" type="number" step="0.01" placeholder="Weight (kg)" required class="col-span-3 border border-gray-300 rounded-md px-2 py-1.5 text-sm dark:border-gray-700 dark:bg-gray-800">
@@ -57,9 +57,25 @@
                 <button type="button" @click="rows.splice(index, 1)" x-show="rows.length > 1" class="col-span-1 text-red-500 hover:text-red-700 text-sm">✕</button>
             </div>
         </template>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Weight and price/kg pre-fill from the animal's latest weigh-in and its species' <a href="{{ route('species.index') }}" class="underline">default price</a> &mdash; both stay editable per sale.</p>
     </div>
 
     <button type="submit" class="bg-indigo-600 text-white text-sm px-4 py-2 rounded-md hover:bg-indigo-700">Record Sale</button>
 </form>
 @endif
 @endsection
+
+@push('scripts')
+<script>
+    function fillDefaults(row, selectEl) {
+        const option = selectEl.selectedOptions[0];
+        if (!option) return;
+
+        const weight = option.dataset.weight;
+        const price = option.dataset.price;
+
+        row.sale_weight_kg = weight && weight !== '0' ? weight : '';
+        row.price_per_kg = price ? price : '';
+    }
+</script>
+@endpush
