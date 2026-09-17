@@ -6,9 +6,9 @@
 # via `fromDatabase` below.
 #
 # The database plan is deliberately NOT "free" -- Render's free Postgres tier
-# has no automated backups and expires after 90 days, which fails the
+# has no automated backups and expires after 30 days, which fails the
 # explicit "managed Postgres + automated backups" requirement this was built
-# for. Bump `starter` to a larger plan if the dataset outgrows it; backups
+# for. Bump `basic-256mb` to a larger plan if the dataset outgrows it; backups
 # stay on for every paid tier.
 #
 # Secrets (APP_KEY, MAIL_*) are marked `sync: false` so Render prompts for
@@ -90,4 +90,4 @@ services:
 databases:
   - name: livestock-erp-db
     databaseName: livestock_erp
-    plan: starter
+    plan: basic-256mb
