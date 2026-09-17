@@ -46,7 +46,10 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c-3 0-5 2-5 5 0 1.5.5 2.5 1 3.5L5 17v3h14v-3l-3-5.5c.5-1 1-2 1-3.5 0-3-2-5-5-5z"/></svg>
                 <span class="font-semibold tracking-tight">Livestock ERP</span>
             </div>
-            @include('partials.notification-bell')
+            <div class="flex items-center gap-1">
+                @include('partials.scan-button')
+                @include('partials.notification-bell')
+            </div>
         </div>
 
         <nav class="flex-1 overflow-y-auto px-3 py-4 text-sm">
@@ -136,12 +139,6 @@
                 Batches
             </a>
 
-            <a href="{{ route('scan') }}"
-               class="flex items-center gap-3 rounded-md px-3 py-2 mb-0.5 {{ request()->routeIs('scan') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V4h4M4 16v4h4M16 4h4v4M16 20h4v-4M4 12h16"/></svg>
-                Scan
-            </a>
-
             {{-- Leftover operational reports that don't belong to Purchase/Inventory/Sales/Finance --}}
             @if (auth()->user()->hasPermission('dashboard.view'))
                 <div x-data="{ open: {{ $reportsActive ? 'true' : 'false' }} }">
@@ -202,7 +199,10 @@
             </button>
             <span class="font-semibold">Livestock ERP</span>
         </div>
-        @include('partials.notification-bell')
+        <div class="flex items-center gap-1">
+            @include('partials.scan-button')
+            @include('partials.notification-bell')
+        </div>
     </div>
 
     <main class="min-h-screen px-4 py-6 sm:px-6 md:ml-64 md:px-8 md:py-8">
