@@ -46,10 +46,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c-3 0-5 2-5 5 0 1.5.5 2.5 1 3.5L5 17v3h14v-3l-3-5.5c.5-1 1-2 1-3.5 0-3-2-5-5-5z"/></svg>
                 <span class="font-semibold tracking-tight">Livestock ERP</span>
             </div>
-            <div class="flex items-center gap-1">
-                @include('partials.scan-button')
-                @include('partials.notification-bell')
-            </div>
+            @include('partials.notification-bell')
         </div>
 
         <nav class="flex-1 overflow-y-auto px-3 py-4 text-sm">
@@ -199,10 +196,7 @@
             </button>
             <span class="font-semibold">Livestock ERP</span>
         </div>
-        <div class="flex items-center gap-1">
-            @include('partials.scan-button')
-            @include('partials.notification-bell')
-        </div>
+        @include('partials.notification-bell')
     </div>
 
     <main class="min-h-screen px-4 py-6 sm:px-6 md:ml-64 md:px-8 md:py-8">

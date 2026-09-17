@@ -3,7 +3,10 @@
 @section('title', 'Dashboard')
 
 @section('content')
-<h1 class="text-2xl font-semibold mb-6">Dashboard</h1>
+<div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-semibold">Dashboard</h1>
+    @include('partials.scan-button')
+</div>
 
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
     <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4">
