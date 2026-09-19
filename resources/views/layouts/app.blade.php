@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#3E8E41">
+    <meta name="theme-color" content="#2F6B3A">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <title>@yield('title', 'Livestock ERP')</title>
@@ -23,22 +23,22 @@
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // "indigo" is remapped to the Meadow green scale so every existing indigo-* class picks up the brand color.
+        // "indigo" is remapped to the Pasture green scale so every existing indigo-* class picks up the brand color.
         tailwind.config = {
             darkMode: 'class',
             theme: { extend: { colors: {
                 indigo: {
-                    50: '#F0F8F0', 100: '#DCEFDC', 200: '#BADFBB', 300: '#90C892', 400: '#62AB65',
-                    500: '#4A9A4D', 600: '#3E8E41', 700: '#327335', 800: '#295C2C', 900: '#1F4522', 950: '#112B14',
+                    50: '#F0F7F1', 100: '#DBEBDD', 200: '#B9D7BE', 300: '#8DBD96', 400: '#5E9C6A',
+                    500: '#3F8050', 600: '#2F6B3A', 700: '#26562F', 800: '#1F4526', 900: '#18351D', 950: '#0C1E10',
                 },
-                sunrise: { 400: '#EDA55A', 500: '#E58A2F', 600: '#C86F1B' },
+                harvest: { 400: '#E3B75F', 500: '#D9A441', 600: '#B8862B' },
             } } },
         };
     </script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>[x-cloak] { display: none !important; }</style>
 </head>
-<body class="bg-[#FAFAF7] text-[#333B3F] dark:bg-gray-950 dark:text-gray-100" x-data="{ sidebarOpen: false }">
+<body class="bg-[#F7F3EA] text-[#2B2B2B] dark:bg-gray-950 dark:text-gray-100" x-data="{ sidebarOpen: false }">
     @auth
     @php
         $purchaseActive = request()->routeIs(['purchase-orders.*', 'suppliers.*', 'reports.purchases']);

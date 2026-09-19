@@ -92,7 +92,7 @@
         Chart.defaults.color = isDark ? '#9ca3af' : '#4b5563';
         Chart.defaults.borderColor = isDark ? '#374151' : '#e5e7eb';
 
-        const palette = ['#3E8E41', '#E58A2F', '#3B7CA6', '#7C9A6B', '#B23A2E', '#8A6D3B'];
+        const palette = ['#2F6B3A', '#D9A441', '#3B7CA6', '#7C9A6B', '#B23A2E', '#8A6D3B'];
         const monthLabels = @json($chartMonthLabels);
 
         const revenueExpenseEl = document.getElementById('revenueExpenseChart');
@@ -102,8 +102,8 @@
                 data: {
                     labels: monthLabels,
                     datasets: [
-                        { label: 'Revenue', data: @json($chartRevenue), backgroundColor: '#3E8E41' },
-                        { label: 'Expenses', data: @json($chartExpenses), backgroundColor: '#E58A2F' },
+                        { label: 'Revenue', data: @json($chartRevenue), backgroundColor: '#2F6B3A' },
+                        { label: 'Expenses', data: @json($chartExpenses), backgroundColor: '#D9A441' },
                     ],
                 },
                 options: { responsive: true, plugins: { legend: { position: 'bottom' } } },
@@ -152,7 +152,7 @@
                     datasets: [{
                         label: 'Net Profit',
                         data: batchProfit,
-                        backgroundColor: batchProfit.map((v) => v >= 0 ? '#3E8E41' : '#B23A2E'),
+                        backgroundColor: batchProfit.map((v) => v >= 0 ? '#2F6B3A' : '#B23A2E'),
                     }],
                 },
                 options: { responsive: true, indexAxis: 'y', plugins: { legend: { display: false } } },
