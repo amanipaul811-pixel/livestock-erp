@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#111827">
+    <meta name="theme-color" content="#3E8E41">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <title>@yield('title', 'Livestock ERP')</title>
@@ -22,11 +22,23 @@
         }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config = { darkMode: 'class' };</script>
+    <script>
+        // "indigo" is remapped to the Meadow green scale so every existing indigo-* class picks up the brand color.
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: {
+                indigo: {
+                    50: '#F0F8F0', 100: '#DCEFDC', 200: '#BADFBB', 300: '#90C892', 400: '#62AB65',
+                    500: '#4A9A4D', 600: '#3E8E41', 700: '#327335', 800: '#295C2C', 900: '#1F4522', 950: '#112B14',
+                },
+                sunrise: { 400: '#EDA55A', 500: '#E58A2F', 600: '#C86F1B' },
+            } } },
+        };
+    </script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>[x-cloak] { display: none !important; }</style>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100" x-data="{ sidebarOpen: false }">
+<body class="bg-[#FAFAF7] text-[#333B3F] dark:bg-gray-950 dark:text-gray-100" x-data="{ sidebarOpen: false }">
     @auth
     @php
         $purchaseActive = request()->routeIs(['purchase-orders.*', 'suppliers.*', 'reports.purchases']);
