@@ -5,7 +5,7 @@
 @section('content')
 <div class="flex items-center justify-between mb-6">
     <div class="flex items-center gap-3">
-        @include('partials.back-button')
+        @include('partials.back-button', ['fallback' => route('sections.inventory')])
         <h1 class="text-2xl font-semibold">Ration Formulas</h1>
     </div>
     @if (auth()->user()->hasPermission('rationformula.create'))

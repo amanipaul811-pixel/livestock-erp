@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="flex items-center gap-3 mb-6">
-    @include('partials.back-button')
+    @include('partials.back-button', ['fallback' => route('sections.sales')])
     <h1 class="text-2xl font-semibold">Record a Sale</h1>
 </div>
 

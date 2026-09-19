@@ -27,6 +27,7 @@ use App\Http\Controllers\Web\StockReportController;
 use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\WarehouseController;
+use App\Http\Controllers\Web\SectionController;
 use App\Http\Controllers\Web\WeighInController;
 use Illuminate\Support\Facades\Route;
 
@@ -53,6 +54,10 @@ Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name(
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
+
+    Route::get('/purchase', [SectionController::class, 'purchase'])->name('sections.purchase');
+    Route::get('/inventory', [SectionController::class, 'inventory'])->name('sections.inventory');
+    Route::get('/sales', [SectionController::class, 'sales'])->name('sections.sales');
 
     Route::get('/batches', [BatchController::class, 'index'])->name('batches.index');
     Route::get('/batches/create', [BatchController::class, 'create'])->name('batches.create')->middleware('permission:batch.create');

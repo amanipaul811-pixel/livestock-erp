@@ -5,7 +5,7 @@
 @section('content')
 <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
     <div class="flex items-center gap-3">
-        @include('partials.back-button')
+        @include('partials.back-button', ['fallback' => route('sections.purchase')])
         <h1 class="text-2xl font-semibold">Purchases Report</h1>
     </div>
     <div class="flex gap-2">
