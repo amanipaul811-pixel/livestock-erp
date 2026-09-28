@@ -4,7 +4,6 @@ namespace Tests\Feature\Web;
 
 use App\Models\Animal;
 use App\Models\Batch;
-use App\Models\HealthRecord;
 use App\Models\Species;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\CreatesUsers;
@@ -57,20 +56,6 @@ class ProductsTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('No default price set');
-    }
-
-    public function test_it_shows_the_most_recent_health_record(): void
-    {
-        $species = Species::factory()->create();
-        $batch = Batch::factory()->create(['species_id' => $species->id]);
-        $animal = Animal::factory()->create(['batch_id' => $batch->id, 'species_id' => $species->id, 'status' => 'on_feed']);
-        HealthRecord::factory()->create(['animal_id' => $animal->id, 'record_type' => 'vaccination', 'record_date' => now()->subDays(10)]);
-        HealthRecord::factory()->create(['animal_id' => $animal->id, 'record_type' => 'checkup', 'record_date' => now()->subDay()]);
-
-        $response = $this->actingAs($this->adminUser())->get('/products');
-
-        $response->assertOk();
-        $response->assertSee('Checkup on '.now()->subDay()->format('Y-m-d'));
     }
 
     public function test_the_products_link_is_visible_in_the_sidebar(): void

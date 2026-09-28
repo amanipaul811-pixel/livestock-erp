@@ -19,7 +19,6 @@
                 <th class="px-4 py-2">Species</th>
                 <th class="px-4 py-2">Weight (kg)</th>
                 <th class="px-4 py-2">Selling Price</th>
-                <th class="px-4 py-2">Health</th>
             </tr>
         </thead>
         <tbody>
@@ -41,16 +40,9 @@
                             <span class="text-gray-400 dark:text-gray-500">No default price set — <a href="{{ route('species.index') }}" class="underline" onclick="event.stopPropagation()">set one</a></span>
                         @endif
                     </td>
-                    <td class="px-4 py-2">
-                        @if ($product->last_health_record)
-                            {{ ucfirst($product->last_health_record->record_type) }} on {{ $product->last_health_record->record_date->format('Y-m-d') }}
-                        @else
-                            <span class="text-gray-400 dark:text-gray-500">No health records yet</span>
-                        @endif
-                    </td>
                 </tr>
             @empty
-                <tr><td colspan="6" class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">No animals available to sell right now.</td></tr>
+                <tr><td colspan="5" class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">No animals available to sell right now.</td></tr>
             @endforelse
         </tbody>
     </table>
