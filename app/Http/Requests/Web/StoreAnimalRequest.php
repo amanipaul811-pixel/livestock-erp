@@ -14,7 +14,6 @@ class StoreAnimalRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tag_id' => 'required|string|unique:animals,tag_id',
             'breed' => 'nullable|string',
             'sex' => 'required|in:male,female',
             'estimated_age_months' => 'nullable|integer',

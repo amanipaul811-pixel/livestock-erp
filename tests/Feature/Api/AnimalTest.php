@@ -20,7 +20,6 @@ class AnimalTest extends TestCase
         $batch = Batch::factory()->create();
 
         $response = $this->postJson('/api/animals', [
-            'tag_id' => 'TAG-INTAKE-1',
             'batch_id' => $batch->id,
             'species_id' => $batch->species_id,
             'sex' => 'male',
@@ -30,26 +29,36 @@ class AnimalTest extends TestCase
         ]);
 
         $response->assertCreated()->assertJsonPath('status', 'on_feed');
-        $this->assertDatabaseHas('animals', ['tag_id' => 'TAG-INTAKE-1', 'status' => 'on_feed']);
+        $this->assertMatchesRegularExpression('/^[A-Z]{1,3}-\d{6}$/', $response->json('tag_id'));
     }
 
-    public function test_tag_id_must_be_unique(): void
+    public function test_tag_id_cannot_be_set_by_the_caller_and_is_assigned_sequentially(): void
     {
         Sanctum::actingAs($this->adminUser());
         $batch = Batch::factory()->create();
-        Animal::factory()->create(['tag_id' => 'DUP-TAG', 'batch_id' => $batch->id]);
 
-        $response = $this->postJson('/api/animals', [
-            'tag_id' => 'DUP-TAG',
+        $this->postJson('/api/animals', [
+            'tag_id' => 'SOMETHING-I-TYPED',
             'batch_id' => $batch->id,
             'species_id' => $batch->species_id,
             'sex' => 'male',
             'entry_date' => now()->toDateString(),
             'entry_weight_kg' => 250,
             'purchase_price' => 500,
-        ]);
+        ])->assertCreated();
 
-        $response->assertStatus(422)->assertJsonValidationErrors('tag_id');
+        $second = $this->postJson('/api/animals', [
+            'batch_id' => $batch->id,
+            'species_id' => $batch->species_id,
+            'sex' => 'female',
+            'entry_date' => now()->toDateString(),
+            'entry_weight_kg' => 250,
+            'purchase_price' => 500,
+        ])->assertCreated();
+
+        $this->assertDatabaseMissing('animals', ['tag_id' => 'SOMETHING-I-TYPED']);
+        $first = Animal::where('batch_id', $batch->id)->orderBy('id')->first();
+        $this->assertNotSame($first->tag_id, $second->json('tag_id'));
     }
 
     public function test_animal_is_ready_to_sell_once_it_hits_target_weight(): void

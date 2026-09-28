@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Concerns\GeneratesSequentialCode;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Animal extends Model
 {
-    use HasFactory;
+    use HasFactory, GeneratesSequentialCode;
 
     protected $fillable = [
         'tag_id', 'batch_id', 'species_id', 'breed', 'sex',
@@ -39,6 +40,15 @@ class Animal extends Model
     public function purchaseOrder()
     {
         return $this->belongsTo(PurchaseOrder::class);
+    }
+
+    // e.g. Cattle -> CAT-000001. Field-readable on a printed ear tag, and the
+    // prefix groups tags by species without a separate stored code column.
+    public static function nextTagId(Species $species): string
+    {
+        $prefix = strtoupper(substr(preg_replace('/[^A-Za-z]/', '', $species->name), 0, 3)).'-';
+
+        return static::nextCodeWithPrefix('tag_id', $prefix, 6);
     }
 
     public function currentPen()

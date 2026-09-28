@@ -32,6 +32,7 @@ class BatchController extends Controller
     public function store(StoreBatchRequest $request)
     {
         $validated = $request->validated();
+        $validated['batch_code'] = Batch::nextBatchCode();
         $validated['created_by'] = $request->user()->id;
         $validated['status'] = 'active';
 

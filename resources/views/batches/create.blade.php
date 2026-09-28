@@ -10,11 +10,7 @@
 
 <form method="POST" action="{{ route('batches.store') }}" class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6 max-w-lg space-y-4">
     @csrf
-    <div>
-        <label class="block text-sm font-medium mb-1">Batch Code</label>
-        <input type="text" name="batch_code" value="{{ old('batch_code') }}" required placeholder="e.g. B-2026-001"
-               class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800">
-    </div>
+    <p class="text-xs text-gray-500 dark:text-gray-400">The batch code is assigned automatically once created.</p>
     <div>
         <label class="block text-sm font-medium mb-1">Species</label>
         <select name="species_id" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800">

@@ -20,7 +20,7 @@ class PurchaseOrderController extends Controller
     public function store(StorePurchaseOrderRequest $request)
     {
         $validated = $request->validated();
-        $validated['po_number'] = 'PO-'.now()->format('Ymd').'-'.strtoupper(uniqid());
+        $validated['po_number'] = PurchaseOrder::nextPoNumber();
         $validated['status'] = 'pending';
 
         $order = PurchaseOrder::create($validated);

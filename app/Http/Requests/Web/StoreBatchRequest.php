@@ -14,7 +14,6 @@ class StoreBatchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'batch_code' => 'required|string|unique:batches,batch_code',
             'species_id' => 'required|exists:species,id',
             'pen_id' => 'nullable|exists:pens,id',
             'start_date' => 'required|date',

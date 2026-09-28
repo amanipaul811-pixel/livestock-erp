@@ -49,7 +49,6 @@ class PurchaseOrderAnimalReceiptTest extends TestCase
         $response->assertSee($order->po_number);
 
         $response = $this->actingAs($admin)->post(route('animals.store', $batch), [
-            'tag_id' => 'PO-LINK-1',
             'sex' => 'male',
             'entry_date' => now()->format('Y-m-d'),
             'entry_weight_kg' => 250,
@@ -58,7 +57,9 @@ class PurchaseOrderAnimalReceiptTest extends TestCase
         ]);
 
         $response->assertRedirect(route('purchase-orders.show', $order));
-        $this->assertSame($order->id, \App\Models\Animal::where('tag_id', 'PO-LINK-1')->firstOrFail()->purchase_order_id);
+        $animal = $batch->animals()->firstOrFail();
+        $this->assertSame($order->id, $animal->purchase_order_id);
+        $this->assertMatchesRegularExpression('/^[A-Z]{1,3}-\d{6}$/', $animal->tag_id);
         $this->assertSame(1, $order->fresh()->animalsReceivedCount());
         $this->assertSame(1, $order->fresh()->animalsRemaining());
     }
@@ -77,7 +78,6 @@ class PurchaseOrderAnimalReceiptTest extends TestCase
         $goatBatch = Batch::factory()->create(['species_id' => $goats->id, 'status' => 'active']);
 
         $response = $this->actingAs($admin)->post(route('animals.store', $goatBatch), [
-            'tag_id' => 'MISMATCH-1',
             'sex' => 'female',
             'entry_date' => now()->format('Y-m-d'),
             'entry_weight_kg' => 30,
@@ -85,8 +85,9 @@ class PurchaseOrderAnimalReceiptTest extends TestCase
             'purchase_order_id' => $order->id,
         ]);
 
-        $response->assertRedirect(route('animals.show', \App\Models\Animal::where('tag_id', 'MISMATCH-1')->firstOrFail()));
-        $this->assertNull(\App\Models\Animal::where('tag_id', 'MISMATCH-1')->firstOrFail()->purchase_order_id);
+        $animal = $goatBatch->animals()->firstOrFail();
+        $response->assertRedirect(route('animals.show', $animal));
+        $this->assertNull($animal->purchase_order_id);
     }
 
     public function test_creating_an_animal_order_requires_species_and_head_count(): void

@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Concerns\GeneratesSequentialCode;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Batch extends Model
 {
-    use HasFactory;
+    use HasFactory, GeneratesSequentialCode;
 
     protected $fillable = [
         'batch_code', 'species_id', 'pen_id', 'start_date',
@@ -38,6 +39,11 @@ class Batch extends Model
     public function animals()
     {
         return $this->hasMany(Animal::class);
+    }
+
+    public static function nextBatchCode(): string
+    {
+        return static::nextCodeWithPrefix('batch_code', 'B-'.now()->year.'-', 4);
     }
 
     public function feedLogs()

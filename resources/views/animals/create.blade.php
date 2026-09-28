@@ -19,10 +19,7 @@
     @if ($purchaseOrder)
         <input type="hidden" name="purchase_order_id" value="{{ $purchaseOrder->id }}">
     @endif
-    <div>
-        <label class="block text-sm font-medium mb-1">Tag ID</label>
-        <input type="text" name="tag_id" value="{{ old('tag_id') }}" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800">
-    </div>
+    <p class="text-xs text-gray-500 dark:text-gray-400">The tag ID is assigned automatically once saved — print it from the animal's page afterward and attach it.</p>
     <div class="grid grid-cols-2 gap-4">
         <div>
             <label class="block text-sm font-medium mb-1">Breed</label>

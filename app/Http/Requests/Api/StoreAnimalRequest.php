@@ -14,7 +14,6 @@ class StoreAnimalRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tag_id' => 'required|string|unique:animals,tag_id',
             'batch_id' => 'required|exists:batches,id',
             'species_id' => 'required|exists:species,id',
             'breed' => 'nullable|string',

@@ -20,29 +20,34 @@ class BatchTest extends TestCase
         $pen = Pen::factory()->create();
 
         $response = $this->postJson('/api/batches', [
-            'batch_code' => 'B-TEST-1',
             'species_id' => $species->id,
             'pen_id' => $pen->id,
             'start_date' => now()->toDateString(),
         ]);
 
         $response->assertCreated()->assertJsonPath('status', 'active');
-        $this->assertDatabaseHas('batches', ['batch_code' => 'B-TEST-1']);
+        $this->assertMatchesRegularExpression('/^B-\d{4}-\d{4}$/', $response->json('batch_code'));
     }
 
-    public function test_batch_code_must_be_unique(): void
+    public function test_batch_code_cannot_be_set_by_the_caller_and_is_assigned_sequentially(): void
     {
         Sanctum::actingAs($this->adminUser());
         $species = Species::factory()->create();
-        \App\Models\Batch::factory()->create(['batch_code' => 'DUPLICATE', 'species_id' => $species->id]);
 
-        $response = $this->postJson('/api/batches', [
-            'batch_code' => 'DUPLICATE',
+        $this->postJson('/api/batches', [
+            'batch_code' => 'SOMETHING-I-TYPED',
             'species_id' => $species->id,
             'start_date' => now()->toDateString(),
-        ]);
+        ])->assertCreated();
 
-        $response->assertStatus(422)->assertJsonValidationErrors('batch_code');
+        $second = $this->postJson('/api/batches', [
+            'species_id' => $species->id,
+            'start_date' => now()->toDateString(),
+        ])->assertCreated();
+
+        $this->assertDatabaseMissing('batches', ['batch_code' => 'SOMETHING-I-TYPED']);
+        $first = \App\Models\Batch::where('species_id', $species->id)->orderBy('id')->first();
+        $this->assertNotSame($first->batch_code, $second->json('batch_code'));
     }
 
     public function test_vet_cannot_create_a_batch(): void
@@ -51,7 +56,6 @@ class BatchTest extends TestCase
         $species = Species::factory()->create();
 
         $response = $this->postJson('/api/batches', [
-            'batch_code' => 'B-TEST-2',
             'species_id' => $species->id,
             'start_date' => now()->toDateString(),
         ]);

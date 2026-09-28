@@ -7,6 +7,7 @@ use App\Http\Requests\Api\StoreAnimalRequest;
 use App\Models\Animal;
 use App\Models\Batch;
 use App\Models\PurchaseOrder;
+use App\Models\Species;
 
 class AnimalController extends Controller
 {
@@ -26,6 +27,7 @@ class AnimalController extends Controller
     public function store(StoreAnimalRequest $request)
     {
         $validated = $request->validated();
+        $validated['tag_id'] = Animal::nextTagId(Species::findOrFail($validated['species_id']));
         $validated['status'] = 'on_feed';
 
         // Only an animal PO for this exact species may claim the animal it produces.

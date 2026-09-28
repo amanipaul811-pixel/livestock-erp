@@ -38,6 +38,7 @@ class AnimalController extends Controller
         $validated = $request->validated();
         $validated['batch_id'] = $batch->id;
         $validated['species_id'] = $batch->species_id;
+        $validated['tag_id'] = Animal::nextTagId($batch->species);
         $validated['status'] = 'on_feed';
 
         // Re-verify server-side rather than trusting the hidden field: only an

@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Concerns\GeneratesSequentialCode;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseOrder extends Model
 {
-    use HasFactory;
+    use HasFactory, GeneratesSequentialCode;
 
     protected $fillable = ['po_number', 'supplier_id', 'order_type', 'feed_item_id', 'quantity_kg', 'species_id', 'quantity', 'order_date', 'total_amount', 'status'];
 
@@ -41,6 +42,11 @@ class PurchaseOrder extends Model
     public function animalsRemaining(): int
     {
         return max(0, (int) $this->quantity - $this->animalsReceivedCount());
+    }
+
+    public static function nextPoNumber(): string
+    {
+        return static::nextCodeWithPrefix('po_number', 'PO-'.now()->year.'-', 4);
     }
 
     public function payments()
