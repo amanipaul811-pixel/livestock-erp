@@ -68,6 +68,7 @@
 </div>
 
 <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden mb-6">
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-gray-50 text-left text-gray-600 dark:bg-gray-800 dark:text-gray-300">
             <tr>
@@ -98,11 +99,13 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
     <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
         <h2 class="font-semibold p-4 pb-0">Accounts Receivable Aging</h2>
+        <div class="overflow-x-auto">
         <table class="w-full text-sm mt-3">
             <thead class="bg-gray-50 text-left text-gray-600 dark:bg-gray-800 dark:text-gray-300">
                 <tr><th class="px-4 py-2">Customer</th><th class="px-4 py-2">Invoice</th><th class="px-4 py-2">Balance</th><th class="px-4 py-2">Age</th></tr>
@@ -120,10 +123,12 @@
                 @endforelse
             </tbody>
         </table>
+        </div>
     </div>
 
     <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
         <h2 class="font-semibold p-4 pb-0">Accounts Payable Aging</h2>
+        <div class="overflow-x-auto">
         <table class="w-full text-sm mt-3">
             <thead class="bg-gray-50 text-left text-gray-600 dark:bg-gray-800 dark:text-gray-300">
                 <tr><th class="px-4 py-2">Supplier</th><th class="px-4 py-2">PO</th><th class="px-4 py-2">Balance</th><th class="px-4 py-2">Age</th></tr>
@@ -141,6 +146,7 @@
                 @endforelse
             </tbody>
         </table>
+        </div>
     </div>
 </div>
 

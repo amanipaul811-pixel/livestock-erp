@@ -43,6 +43,7 @@
 
     <div>
         <div class="border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
+            <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead class="bg-gray-50 text-left text-gray-600 dark:bg-gray-800 dark:text-gray-300">
                     <tr>
@@ -66,7 +67,7 @@
                                     <option value="{{ $feedItem->id }}">{{ $feedItem->name }}</option>
                                 @endforeach
                             </select>
-                            <span x-show="orderType === 'medicine' || orderType === 'other'" x-cloak class="text-gray-400 dark:text-gray-500">Not itemized — just the total below</span>
+                            <span x-show="orderType === 'medicine' || orderType === 'other'" x-cloak class="text-gray-400 dark:text-gray-500">No item</span>
                         </td>
                         <td class="px-3 py-2 align-top">
                             <input x-show="orderType === 'animal'" x-cloak type="number" step="1" min="1" name="quantity" placeholder="Head count" class="w-full border-0 bg-transparent text-sm focus:ring-0 p-0">
@@ -79,9 +80,11 @@
                     </tr>
                 </tbody>
             </table>
+            </div>
         </div>
         <p x-show="orderType === 'feed'" x-cloak class="text-xs text-gray-500 dark:text-gray-400 mt-2">Marking this order received will add this quantity straight to feed stock.</p>
         <p x-show="orderType === 'animal'" x-cloak class="text-xs text-gray-500 dark:text-gray-400 mt-2">Marking this order received will let you record each animal against it (tag, weight, and the rest) until this head count is reached.</p>
+        <p x-show="orderType === 'medicine' || orderType === 'other'" x-cloak class="text-xs text-gray-500 dark:text-gray-400 mt-2">Medicine and other orders aren't itemized — just enter the total amount.</p>
     </div>
 
     <button type="submit" class="bg-indigo-600 text-white text-sm px-4 py-2 rounded-md hover:bg-indigo-700">Create Purchase Order</button>

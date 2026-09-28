@@ -11,6 +11,7 @@
 <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 max-w-xl">Set a default price per kg for each species. Recording a sale will pre-fill that price for animals of this species, and you can still change it for any individual sale.</p>
 
 <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden max-w-xl">
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-gray-50 text-left text-gray-600 dark:bg-gray-800 dark:text-gray-300">
             <tr><th class="px-4 py-2">Species</th><th class="px-4 py-2">Default Price/kg</th><th class="px-4 py-2"></th></tr>
@@ -31,5 +32,6 @@
             @endforeach
         </tbody>
     </table>
+    </div>
 </div>
 @endsection

@@ -11,6 +11,7 @@
 <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 max-w-2xl">Every animal currently on feed and available to sell, with its selling price worked out from its latest weight and its species' default price per kg.</p>
 
 <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-gray-50 text-left text-gray-600 dark:bg-gray-800 dark:text-gray-300">
             <tr>
@@ -46,5 +47,6 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 </div>
 @endsection

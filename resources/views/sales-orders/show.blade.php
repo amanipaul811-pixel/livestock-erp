@@ -29,6 +29,7 @@
 </div>
 
 <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-gray-50 text-left text-gray-600 dark:bg-gray-800 dark:text-gray-300">
             <tr><th class="px-4 py-2">Animal</th><th class="px-4 py-2">Sale Weight</th><th class="px-4 py-2">Price/kg</th><th class="px-4 py-2">Line Total</th></tr>
@@ -44,6 +45,7 @@
             @endforeach
         </tbody>
     </table>
+    </div>
 </div>
 
 <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4 mt-6 max-w-xl">

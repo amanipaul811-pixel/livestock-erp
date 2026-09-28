@@ -73,6 +73,7 @@
 </div>
 
 <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-gray-50 text-left text-gray-600 dark:bg-gray-800 dark:text-gray-300">
             <tr>
@@ -98,5 +99,6 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 </div>
 @endsection
