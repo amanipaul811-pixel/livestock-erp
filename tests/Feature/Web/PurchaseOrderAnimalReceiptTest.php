@@ -64,6 +64,26 @@ class PurchaseOrderAnimalReceiptTest extends TestCase
         $this->assertSame(1, $order->fresh()->animalsRemaining());
     }
 
+    public function test_the_intake_form_preselects_the_purchase_orders_supplier(): void
+    {
+        $admin = $this->adminUser();
+        $species = Species::factory()->create();
+        $supplier = Supplier::factory()->create();
+        $order = PurchaseOrder::factory()->create([
+            'order_type' => 'animal',
+            'species_id' => $species->id,
+            'supplier_id' => $supplier->id,
+            'quantity' => 1,
+            'status' => 'received',
+        ]);
+        $batch = Batch::factory()->create(['species_id' => $species->id, 'status' => 'active']);
+
+        $response = $this->actingAs($admin)->get(route('animals.create', $batch).'?purchase_order_id='.$order->id);
+
+        $response->assertOk();
+        $response->assertSee('value="'.$supplier->id.'" selected', false);
+    }
+
     public function test_a_purchase_order_id_for_a_mismatched_species_is_ignored(): void
     {
         $admin = $this->adminUser();

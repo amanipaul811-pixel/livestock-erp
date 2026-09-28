@@ -68,7 +68,7 @@
             <select name="supplier_id" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800">
                 <option value="">None</option>
                 @foreach ($suppliers as $supplier)
-                    <option value="{{ $supplier->id }}" @selected(old('supplier_id') == $supplier->id)>{{ $supplier->name }}</option>
+                    <option value="{{ $supplier->id }}" @selected(old('supplier_id', $purchaseOrder->supplier_id ?? null) == $supplier->id)>{{ $supplier->name }}</option>
                 @endforeach
             </select>
         </div>
