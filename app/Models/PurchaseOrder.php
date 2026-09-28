@@ -9,7 +9,7 @@ class PurchaseOrder extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['po_number', 'supplier_id', 'order_type', 'feed_item_id', 'quantity_kg', 'order_date', 'total_amount', 'status'];
+    protected $fillable = ['po_number', 'supplier_id', 'order_type', 'feed_item_id', 'quantity_kg', 'species_id', 'quantity', 'order_date', 'total_amount', 'status'];
 
     protected $casts = ['order_date' => 'date'];
 
@@ -21,6 +21,26 @@ class PurchaseOrder extends Model
     public function feedItem()
     {
         return $this->belongsTo(FeedItem::class);
+    }
+
+    public function species()
+    {
+        return $this->belongsTo(Species::class);
+    }
+
+    public function animals()
+    {
+        return $this->hasMany(Animal::class);
+    }
+
+    public function animalsReceivedCount(): int
+    {
+        return $this->animals()->count();
+    }
+
+    public function animalsRemaining(): int
+    {
+        return max(0, (int) $this->quantity - $this->animalsReceivedCount());
     }
 
     public function payments()

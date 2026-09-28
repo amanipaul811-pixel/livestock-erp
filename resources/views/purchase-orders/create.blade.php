@@ -49,6 +49,22 @@
         </div>
         <p class="col-span-2 text-xs text-gray-500 dark:text-gray-400">Marking this order received will add this quantity straight to feed stock.</p>
     </div>
+    <div x-show="orderType === 'animal'" x-cloak class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm font-medium mb-1">Species</label>
+            <select name="species_id" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800">
+                <option value="">Select species</option>
+                @foreach ($speciesList as $species)
+                    <option value="{{ $species->id }}">{{ $species->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div>
+            <label class="block text-sm font-medium mb-1">Head Count</label>
+            <input type="number" step="1" min="1" name="quantity" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800">
+        </div>
+        <p class="col-span-2 text-xs text-gray-500 dark:text-gray-400">Marking this order received will let you record each animal against it (tag, weight, and the rest) until this head count is reached.</p>
+    </div>
     <div class="grid grid-cols-2 gap-4">
         <div>
             <label class="block text-sm font-medium mb-1">Order Date</label>

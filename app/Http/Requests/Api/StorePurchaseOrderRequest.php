@@ -18,6 +18,8 @@ class StorePurchaseOrderRequest extends FormRequest
             'order_type' => 'required|in:animal,feed,medicine,other',
             'feed_item_id' => 'required_if:order_type,feed|nullable|exists:feed_items,id',
             'quantity_kg' => 'required_if:order_type,feed|nullable|numeric|min:0.01',
+            'species_id' => 'required_if:order_type,animal|nullable|exists:species,id',
+            'quantity' => 'required_if:order_type,animal|nullable|integer|min:1',
             'order_date' => 'required|date',
             'total_amount' => 'required|numeric|min:0',
         ];

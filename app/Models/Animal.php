@@ -12,7 +12,7 @@ class Animal extends Model
     protected $fillable = [
         'tag_id', 'batch_id', 'species_id', 'breed', 'sex',
         'estimated_age_months', 'entry_date', 'entry_weight_kg',
-        'purchase_price', 'supplier_id', 'current_pen_id', 'status',
+        'purchase_price', 'supplier_id', 'purchase_order_id', 'current_pen_id', 'status',
         'exit_date', 'exit_weight_kg',
     ];
 
@@ -34,6 +34,11 @@ class Animal extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    public function purchaseOrder()
+    {
+        return $this->belongsTo(PurchaseOrder::class);
     }
 
     public function currentPen()

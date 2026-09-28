@@ -8,11 +8,17 @@
     <div>
         <h1 class="text-2xl font-semibold mb-1">Intake Animal</h1>
         <p class="text-sm text-gray-500 dark:text-gray-400">Into batch {{ $batch->batch_code }} ({{ $batch->species->name }})</p>
+        @if ($purchaseOrder)
+            <p class="text-sm text-indigo-600 dark:text-indigo-400 mt-1">Linked to purchase order {{ $purchaseOrder->po_number }} ({{ $purchaseOrder->animalsReceivedCount() + 1 }} of {{ $purchaseOrder->quantity }})</p>
+        @endif
     </div>
 </div>
 
 <form method="POST" action="{{ route('animals.store', $batch) }}" class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6 max-w-lg space-y-4">
     @csrf
+    @if ($purchaseOrder)
+        <input type="hidden" name="purchase_order_id" value="{{ $purchaseOrder->id }}">
+    @endif
     <div>
         <label class="block text-sm font-medium mb-1">Tag ID</label>
         <input type="text" name="tag_id" value="{{ old('tag_id') }}" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800">

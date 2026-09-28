@@ -9,6 +9,7 @@ use App\Models\Batch;
 use App\Models\FeedItem;
 use App\Models\Pen;
 use App\Models\Species;
+use Illuminate\Http\Request;
 
 class BatchController extends Controller
 {
@@ -19,11 +20,12 @@ class BatchController extends Controller
         return view('batches.index', ['batches' => $batches]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
         return view('batches.create', [
             'speciesList' => Species::orderBy('name')->get(),
             'pens' => Pen::where('is_active', true)->orderBy('name')->get(),
+            'preselectedSpeciesId' => $request->query('species_id'),
         ]);
     }
 

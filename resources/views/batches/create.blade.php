@@ -20,7 +20,7 @@
         <select name="species_id" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800">
             <option value="">Select species</option>
             @foreach ($speciesList as $species)
-                <option value="{{ $species->id }}" @selected(old('species_id') == $species->id)>{{ $species->name }}</option>
+                <option value="{{ $species->id }}" @selected(old('species_id', $preselectedSpeciesId) == $species->id)>{{ $species->name }}</option>
             @endforeach
         </select>
     </div>

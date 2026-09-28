@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreAnimalRequest;
 use App\Models\Animal;
 use App\Models\Batch;
+use App\Models\PurchaseOrder;
 
 class AnimalController extends Controller
 {
@@ -26,6 +27,13 @@ class AnimalController extends Controller
     {
         $validated = $request->validated();
         $validated['status'] = 'on_feed';
+
+        // Only an animal PO for this exact species may claim the animal it produces.
+        $purchaseOrder = PurchaseOrder::where('id', $validated['purchase_order_id'] ?? null)
+            ->where('order_type', 'animal')
+            ->where('species_id', $validated['species_id'])
+            ->first();
+        $validated['purchase_order_id'] = $purchaseOrder?->id;
 
         $animal = Animal::create($validated);
 

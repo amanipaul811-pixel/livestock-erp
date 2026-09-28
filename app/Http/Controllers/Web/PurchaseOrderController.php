@@ -6,8 +6,10 @@ use App\Actions\ReceivePurchaseOrder;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\StorePurchaseOrderRequest;
 use App\Http\Requests\Web\UpdatePurchaseOrderStatusRequest;
+use App\Models\Batch;
 use App\Models\FeedItem;
 use App\Models\PurchaseOrder;
+use App\Models\Species;
 use App\Models\Supplier;
 
 class PurchaseOrderController extends Controller
@@ -24,6 +26,7 @@ class PurchaseOrderController extends Controller
         return view('purchase-orders.create', [
             'suppliers' => Supplier::orderBy('name')->get(),
             'feedItems' => FeedItem::orderBy('name')->get(),
+            'speciesList' => Species::orderBy('name')->get(),
         ]);
     }
 
@@ -40,13 +43,16 @@ class PurchaseOrderController extends Controller
 
     public function show(PurchaseOrder $purchaseOrder)
     {
-        $purchaseOrder->load('supplier');
+        $purchaseOrder->load(['supplier', 'species', 'animals.currentPen']);
 
         return view('purchase-orders.show', [
             'order' => $purchaseOrder,
             'payments' => $purchaseOrder->payments()->orderBy('payment_date')->get(),
             'amountPaid' => $purchaseOrder->amountPaid(),
             'balanceDue' => $purchaseOrder->balanceDue(),
+            'eligibleBatches' => $purchaseOrder->order_type === 'animal' && $purchaseOrder->species_id
+                ? Batch::where('species_id', $purchaseOrder->species_id)->where('status', 'active')->orderBy('batch_code')->get()
+                : collect(),
         ]);
     }
 

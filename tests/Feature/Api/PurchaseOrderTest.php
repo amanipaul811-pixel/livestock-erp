@@ -6,6 +6,7 @@ use App\Models\Expense;
 use App\Models\FeedItem;
 use App\Models\FeedStockMovement;
 use App\Models\PurchaseOrder;
+use App\Models\Species;
 use App\Models\Supplier;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
@@ -20,10 +21,13 @@ class PurchaseOrderTest extends TestCase
     {
         Sanctum::actingAs($this->userWithRole('Farm Manager'));
         $supplier = Supplier::factory()->create();
+        $species = Species::factory()->create();
 
         $response = $this->postJson('/api/purchase-orders', [
             'supplier_id' => $supplier->id,
             'order_type' => 'animal',
+            'species_id' => $species->id,
+            'quantity' => 10,
             'order_date' => now()->toDateString(),
             'total_amount' => 2500,
         ]);

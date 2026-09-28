@@ -14,6 +14,9 @@
                 @if ($order->order_type === 'feed' && $order->feedItem)
                     &middot; {{ $order->quantity_kg }} kg of {{ $order->feedItem->name }}
                 @endif
+                @if ($order->order_type === 'animal' && $order->species)
+                    &middot; {{ $order->quantity }} head of {{ $order->species->name }}
+                @endif
             </p>
         </div>
     </div>
@@ -34,6 +37,49 @@
         </div>
     @endif
 </div>
+
+@if ($order->order_type === 'animal' && $order->status === 'received')
+    <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4 mb-8 max-w-xl">
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="font-semibold">Animals for this order</h2>
+            <span class="text-sm text-gray-500 dark:text-gray-400">{{ $order->animalsReceivedCount() }} of {{ $order->quantity }} recorded</span>
+        </div>
+
+        @if ($order->animals->isNotEmpty())
+            <table class="w-full text-sm mb-4">
+                <thead class="text-left text-gray-500 dark:text-gray-400">
+                    <tr><th class="py-1">Tag</th><th class="py-1">Pen</th><th class="py-1">Status</th></tr>
+                </thead>
+                <tbody>
+                    @foreach ($order->animals as $animal)
+                        <tr class="border-t border-gray-200 dark:border-gray-800">
+                            <td class="py-1.5"><a href="{{ route('animals.show', $animal) }}" class="text-indigo-600 dark:text-indigo-400 hover:underline">{{ $animal->tag_id }}</a></td>
+                            <td class="py-1.5">{{ $animal->currentPen->name ?? 'Unassigned' }}</td>
+                            <td class="py-1.5">{{ $animal->status }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+
+        @if ($order->animalsRemaining() > 0)
+            @if ($eligibleBatches->isNotEmpty())
+                <form method="GET" action="" x-data="{ batch: '{{ $eligibleBatches->first()->id }}' }" @submit.prevent="window.location = batch ? `/batches/${batch}/animals/create?purchase_order_id={{ $order->id }}` : null" class="flex items-center gap-2">
+                    <select x-model="batch" class="border border-gray-300 rounded-md px-2 py-1.5 text-sm dark:border-gray-700 dark:bg-gray-800">
+                        @foreach ($eligibleBatches as $batch)
+                            <option value="{{ $batch->id }}">{{ $batch->batch_code }}</option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="bg-indigo-600 text-white text-sm px-3 py-1.5 rounded-md hover:bg-indigo-700">Record An Animal</button>
+                </form>
+            @else
+                <p class="text-sm text-gray-500 dark:text-gray-400">No open batch for {{ $order->species->name }} yet — <a href="{{ route('batches.create', ['species_id' => $order->species_id]) }}" class="underline">create one</a> first, then come back here to record these animals against it.</p>
+            @endif
+        @else
+            <p class="text-sm text-green-600">All {{ $order->quantity }} head recorded.</p>
+        @endif
+    </div>
+@endif
 
 <div class="grid grid-cols-3 gap-4 mb-8">
     <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4">

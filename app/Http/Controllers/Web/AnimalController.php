@@ -7,19 +7,29 @@ use App\Http\Requests\Web\StoreAnimalRequest;
 use App\Models\Animal;
 use App\Models\Batch;
 use App\Models\Pen;
+use App\Models\PurchaseOrder;
 use App\Models\Supplier;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\SvgWriter;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class AnimalController extends Controller
 {
-    public function create(Batch $batch)
+    public function create(Request $request, Batch $batch)
     {
+        // A PO link only takes effect when it's an animal order for this batch's
+        // own species -- otherwise a stray or mismatched id in the URL is just ignored.
+        $purchaseOrder = PurchaseOrder::where('id', $request->query('purchase_order_id'))
+            ->where('order_type', 'animal')
+            ->where('species_id', $batch->species_id)
+            ->first();
+
         return view('animals.create', [
             'batch' => $batch,
             'pens' => Pen::where('is_active', true)->orderBy('name')->get(),
             'suppliers' => Supplier::orderBy('name')->get(),
+            'purchaseOrder' => $purchaseOrder,
         ]);
     }
 
@@ -30,7 +40,21 @@ class AnimalController extends Controller
         $validated['species_id'] = $batch->species_id;
         $validated['status'] = 'on_feed';
 
+        // Re-verify server-side rather than trusting the hidden field: only an
+        // animal PO for this exact species may claim the animal it produces.
+        $purchaseOrder = PurchaseOrder::where('id', $validated['purchase_order_id'] ?? null)
+            ->where('order_type', 'animal')
+            ->where('species_id', $batch->species_id)
+            ->first();
+        $validated['purchase_order_id'] = $purchaseOrder?->id;
+
         $animal = Animal::create($validated);
+
+        // Loop back to the PO instead of the animal's own page so the user can
+        // keep recording head against it without re-navigating each time.
+        if ($purchaseOrder) {
+            return redirect()->route('purchase-orders.show', $purchaseOrder)->with('status', "Animal {$animal->tag_id} recorded against {$purchaseOrder->po_number}.");
+        }
 
         return redirect()->route('animals.show', $animal)->with('status', "Animal {$animal->tag_id} added to batch.");
     }

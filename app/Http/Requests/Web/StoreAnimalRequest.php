@@ -22,6 +22,7 @@ class StoreAnimalRequest extends FormRequest
             'entry_weight_kg' => 'required|numeric|min:0',
             'purchase_price' => 'required|numeric|min:0',
             'supplier_id' => 'nullable|exists:suppliers,id',
+            'purchase_order_id' => 'nullable|exists:purchase_orders,id',
             'current_pen_id' => 'nullable|exists:pens,id',
         ];
     }
