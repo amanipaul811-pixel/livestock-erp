@@ -22,7 +22,7 @@ class SalesOrderController extends Controller
                 ->sum(fn ($i) => $i['sale_weight_kg'] * $i['price_per_kg']);
 
             $order = SalesOrder::create([
-                'so_number' => 'SO-' . now()->format('Ymd') . '-' . strtoupper(uniqid()),
+                'so_number' => SalesOrder::nextSoNumber(),
                 'customer_id' => $validated['customer_id'],
                 'sale_date' => $validated['sale_date'],
                 'status' => 'completed',

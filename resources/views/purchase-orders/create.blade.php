@@ -16,7 +16,7 @@
 <form method="POST" action="{{ route('purchase-orders.store') }}" x-data="{ orderType: 'animal' }" class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6 max-w-3xl space-y-6">
     @csrf
 
-    <div class="grid grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
             <label class="block text-sm font-medium mb-1">Supplier</label>
             <select name="supplier_id" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800">

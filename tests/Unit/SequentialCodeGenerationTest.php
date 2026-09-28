@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\Animal;
 use App\Models\Batch;
 use App\Models\PurchaseOrder;
+use App\Models\SalesOrder;
 use App\Models\Species;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -20,6 +21,15 @@ class SequentialCodeGenerationTest extends TestCase
         PurchaseOrder::factory()->create(['po_number' => PurchaseOrder::nextPoNumber()]);
 
         $this->assertSame('PO-'.now()->year.'-0002', PurchaseOrder::nextPoNumber());
+    }
+
+    public function test_so_numbers_increment_within_the_current_year(): void
+    {
+        $this->assertSame('SO-'.now()->year.'-0001', SalesOrder::nextSoNumber());
+
+        SalesOrder::factory()->create(['so_number' => SalesOrder::nextSoNumber()]);
+
+        $this->assertSame('SO-'.now()->year.'-0002', SalesOrder::nextSoNumber());
     }
 
     public function test_batch_codes_increment_within_the_current_year(): void

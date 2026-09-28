@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Concerns\GeneratesSequentialCode;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class SalesOrder extends Model
 {
-    use HasFactory;
+    use HasFactory, GeneratesSequentialCode;
 
     protected $fillable = ['so_number', 'customer_id', 'sale_date', 'status', 'total_amount'];
 
@@ -37,5 +38,10 @@ class SalesOrder extends Model
     public function balanceDue(): float
     {
         return (float) $this->total_amount - $this->amountPaid();
+    }
+
+    public static function nextSoNumber(): string
+    {
+        return static::nextCodeWithPrefix('so_number', 'SO-'.now()->year.'-', 4);
     }
 }
