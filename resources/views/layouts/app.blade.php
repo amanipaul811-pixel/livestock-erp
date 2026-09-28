@@ -155,6 +155,12 @@
                 Batches
             </a>
 
+            <a href="{{ route('products.index') }}"
+               class="flex items-center gap-3 rounded-md px-3 py-2 mb-0.5 {{ request()->routeIs('products.*') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41L13.42 20.59a2 2 0 01-2.83 0L2.5 12.5V4a1.5 1.5 0 011.5-1.5h8.5l8.09 8.09a2 2 0 010 2.82z"/><circle cx="7.5" cy="7.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+                Products
+            </a>
+
             {{-- Leftover operational reports that don't belong to Purchase/Inventory/Sales/Finance --}}
             @if (auth()->user()->hasPermission('dashboard.view'))
                 <div x-data="{ open: {{ $reportsActive ? 'true' : 'false' }} }">
