@@ -10,7 +10,7 @@ class PurchaseOrder extends Model
 {
     use HasFactory, GeneratesSequentialCode;
 
-    protected $fillable = ['po_number', 'supplier_id', 'order_type', 'feed_item_id', 'quantity_kg', 'species_id', 'quantity', 'order_date', 'total_amount', 'status'];
+    protected $fillable = ['po_number', 'supplier_id', 'order_type', 'feed_item_id', 'quantity_kg', 'species_id', 'quantity', 'batch_id', 'order_date', 'total_amount', 'status'];
 
     protected $casts = ['order_date' => 'date'];
 
@@ -27,6 +27,11 @@ class PurchaseOrder extends Model
     public function species()
     {
         return $this->belongsTo(Species::class);
+    }
+
+    public function batch()
+    {
+        return $this->belongsTo(Batch::class);
     }
 
     public function animals()

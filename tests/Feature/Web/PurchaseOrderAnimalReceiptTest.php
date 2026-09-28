@@ -14,7 +14,7 @@ class PurchaseOrderAnimalReceiptTest extends TestCase
 {
     use CreatesUsers, RefreshDatabase;
 
-    public function test_receiving_an_animal_order_does_not_auto_create_any_animal(): void
+    public function test_receiving_an_animal_order_creates_its_own_dedicated_batch_but_no_animals(): void
     {
         $admin = $this->adminUser();
         $species = Species::factory()->create();
@@ -29,7 +29,54 @@ class PurchaseOrderAnimalReceiptTest extends TestCase
             ->patch(route('purchase-orders.update-status', $order), ['status' => 'received'])
             ->assertRedirect();
 
-        $this->assertSame(0, $order->fresh()->animalsReceivedCount());
+        $order->refresh();
+        $this->assertSame(0, $order->animalsReceivedCount());
+        $this->assertNotNull($order->batch_id);
+        $this->assertSame($species->id, $order->batch->species_id);
+        $this->assertSame('active', $order->batch->status);
+    }
+
+    public function test_two_animal_orders_never_share_a_batch_even_for_the_same_species_and_supplier(): void
+    {
+        $admin = $this->adminUser();
+        $species = Species::factory()->create();
+        $supplier = Supplier::factory()->create();
+        $first = PurchaseOrder::factory()->create([
+            'order_type' => 'animal', 'species_id' => $species->id, 'supplier_id' => $supplier->id,
+            'quantity' => 5, 'status' => 'pending',
+        ]);
+        $second = PurchaseOrder::factory()->create([
+            'order_type' => 'animal', 'species_id' => $species->id, 'supplier_id' => $supplier->id,
+            'quantity' => 5, 'status' => 'pending',
+        ]);
+
+        $this->actingAs($admin)->patch(route('purchase-orders.update-status', $first), ['status' => 'received']);
+        $this->actingAs($admin)->patch(route('purchase-orders.update-status', $second), ['status' => 'received']);
+
+        $first->refresh();
+        $second->refresh();
+        $this->assertNotNull($first->batch_id);
+        $this->assertNotNull($second->batch_id);
+        $this->assertNotSame($first->batch_id, $second->batch_id);
+    }
+
+    public function test_receiving_the_same_order_twice_does_not_create_a_second_batch(): void
+    {
+        $admin = $this->adminUser();
+        $species = Species::factory()->create();
+        $order = PurchaseOrder::factory()->create([
+            'order_type' => 'animal', 'species_id' => $species->id, 'quantity' => 2, 'status' => 'pending',
+        ]);
+
+        $this->actingAs($admin)->patch(route('purchase-orders.update-status', $order), ['status' => 'received']);
+        $firstBatchId = $order->fresh()->batch_id;
+
+        // Visiting the order again (the self-healing backfill check) must not
+        // create a second batch now that one already exists.
+        $this->actingAs($admin)->get(route('purchase-orders.show', $order));
+
+        $this->assertSame($firstBatchId, $order->fresh()->batch_id);
+        $this->assertSame(1, Batch::where('species_id', $species->id)->count());
     }
 
     public function test_recording_an_animal_against_the_purchase_order_links_it_and_returns_to_the_order(): void
@@ -37,12 +84,10 @@ class PurchaseOrderAnimalReceiptTest extends TestCase
         $admin = $this->adminUser();
         $species = Species::factory()->create();
         $order = PurchaseOrder::factory()->create([
-            'order_type' => 'animal',
-            'species_id' => $species->id,
-            'quantity' => 2,
-            'status' => 'received',
+            'order_type' => 'animal', 'species_id' => $species->id, 'quantity' => 2, 'status' => 'pending',
         ]);
-        $batch = Batch::factory()->create(['species_id' => $species->id, 'status' => 'active']);
+        $this->actingAs($admin)->patch(route('purchase-orders.update-status', $order), ['status' => 'received']);
+        $batch = $order->fresh()->batch;
 
         $response = $this->actingAs($admin)->get(route('animals.create', $batch).'?purchase_order_id='.$order->id);
         $response->assertOk();
@@ -70,13 +115,11 @@ class PurchaseOrderAnimalReceiptTest extends TestCase
         $species = Species::factory()->create();
         $supplier = Supplier::factory()->create();
         $order = PurchaseOrder::factory()->create([
-            'order_type' => 'animal',
-            'species_id' => $species->id,
-            'supplier_id' => $supplier->id,
-            'quantity' => 1,
-            'status' => 'received',
+            'order_type' => 'animal', 'species_id' => $species->id, 'supplier_id' => $supplier->id,
+            'quantity' => 1, 'status' => 'pending',
         ]);
-        $batch = Batch::factory()->create(['species_id' => $species->id, 'status' => 'active']);
+        $this->actingAs($admin)->patch(route('purchase-orders.update-status', $order), ['status' => 'received']);
+        $batch = $order->fresh()->batch;
 
         $response = $this->actingAs($admin)->get(route('animals.create', $batch).'?purchase_order_id='.$order->id);
 
@@ -90,10 +133,7 @@ class PurchaseOrderAnimalReceiptTest extends TestCase
         $cattle = Species::factory()->create();
         $goats = Species::factory()->create();
         $order = PurchaseOrder::factory()->create([
-            'order_type' => 'animal',
-            'species_id' => $cattle->id,
-            'quantity' => 1,
-            'status' => 'received',
+            'order_type' => 'animal', 'species_id' => $cattle->id, 'quantity' => 1, 'status' => 'received',
         ]);
         $goatBatch = Batch::factory()->create(['species_id' => $goats->id, 'status' => 'active']);
 

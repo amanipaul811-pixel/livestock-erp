@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Models\Batch;
 use App\Models\Expense;
 use App\Models\FeedStockMovement;
 use App\Models\PurchaseOrder;
@@ -39,9 +40,39 @@ class ReceivePurchaseOrder
             ]);
         }
 
-        // order_type=animal is intentionally left manual: receiving a batch of
-        // animals still means walking them in individually via Batch > Add
-        // Animal (tag IDs, weights, pens) -- there's no way to auto-derive
-        // that from a single PO total.
+        // order_type=animal: each animal PO is its own buying event, so it
+        // gets its own dedicated batch -- never an existing one, even one for
+        // the same species bought from the same supplier hours earlier.
+        // Walking each animal in individually (tag, weight, pen) still stays
+        // manual; there's no way to auto-derive that from a single PO total.
+        if ($purchaseOrder->order_type === 'animal') {
+            $this->ensureBatch($purchaseOrder, $recordedBy);
+        }
+    }
+
+    // Idempotent: safe to call again for a PO that already has its batch
+    // (returns the existing one), which also lets it double as a one-time
+    // backfill for orders received before this batch-per-order link existed.
+    public function ensureBatch(PurchaseOrder $purchaseOrder, ?User $recordedBy): ?Batch
+    {
+        if ($purchaseOrder->batch_id) {
+            return $purchaseOrder->batch;
+        }
+
+        if ($purchaseOrder->order_type !== 'animal' || ! $purchaseOrder->species_id) {
+            return null;
+        }
+
+        $batch = Batch::create([
+            'batch_code' => Batch::nextBatchCode(),
+            'species_id' => $purchaseOrder->species_id,
+            'start_date' => now(),
+            'status' => 'active',
+            'created_by' => $recordedBy?->id,
+        ]);
+
+        $purchaseOrder->update(['batch_id' => $batch->id]);
+
+        return $batch;
     }
 }
