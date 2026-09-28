@@ -9,6 +9,7 @@ use App\Models\Batch;
 use App\Models\Customer;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderItem;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 
 class SalesOrderController extends Controller
@@ -84,5 +85,17 @@ class SalesOrderController extends Controller
             'amountPaid' => $salesOrder->amountPaid(),
             'balanceDue' => $salesOrder->balanceDue(),
         ]);
+    }
+
+    public function invoice(SalesOrder $salesOrder)
+    {
+        $salesOrder->load(['customer', 'items.animal.species']);
+
+        return Pdf::loadView('sales-orders.invoice', [
+            'order' => $salesOrder,
+            'payments' => $salesOrder->payments()->orderBy('payment_date')->get(),
+            'amountPaid' => $salesOrder->amountPaid(),
+            'balanceDue' => $salesOrder->balanceDue(),
+        ])->download("invoice-{$salesOrder->so_number}.pdf");
     }
 }

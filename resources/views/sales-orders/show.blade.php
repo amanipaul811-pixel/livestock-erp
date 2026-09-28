@@ -3,14 +3,17 @@
 @section('title', $order->so_number)
 
 @section('content')
-<div class="flex items-start gap-3 mb-6">
-    @include('partials.back-button', ['fallback' => route('sections.sales')])
-    <div>
-        <h1 class="text-2xl font-semibold mb-1">{{ $order->so_number }}</h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-            Customer: {{ $order->customer->name }} &middot; Sale Date: {{ $order->sale_date->format('Y-m-d') }} &middot; Status: {{ $order->status }}
-        </p>
+<div class="flex items-start justify-between gap-3 mb-6">
+    <div class="flex items-start gap-3">
+        @include('partials.back-button', ['fallback' => route('sections.sales')])
+        <div>
+            <h1 class="text-2xl font-semibold mb-1">{{ $order->so_number }}</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                Customer: {{ $order->customer->name }} &middot; Sale Date: {{ $order->sale_date->format('Y-m-d') }} &middot; Status: {{ $order->status }}
+            </p>
+        </div>
     </div>
+    <a href="{{ route('sales-orders.invoice', $order) }}" class="shrink-0 border border-gray-300 text-sm px-4 py-2 rounded-md hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">Download Invoice</a>
 </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">

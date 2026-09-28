@@ -118,6 +118,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/sales-orders/create', [SalesOrderController::class, 'create'])->name('sales-orders.create')->middleware('permission:salesorder.create');
     Route::post('/sales-orders', [SalesOrderController::class, 'store'])->name('sales-orders.store')->middleware('permission:salesorder.create');
     Route::get('/sales-orders/{salesOrder}', [SalesOrderController::class, 'show'])->name('sales-orders.show');
+    Route::get('/sales-orders/{salesOrder}/invoice', [SalesOrderController::class, 'invoice'])->name('sales-orders.invoice');
     Route::post('/sales-orders/{salesOrder}/payments', [PaymentController::class, 'store'])->name('payments.store');
 
     Route::get('/species', [SpeciesController::class, 'index'])->name('species.index');
